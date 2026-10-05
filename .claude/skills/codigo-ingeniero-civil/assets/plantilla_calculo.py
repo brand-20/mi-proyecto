@@ -6,16 +6,24 @@ Autor:    ...
 Fecha:    ...
 Revisión: 0
 
-Requiere el paquete `civil` (scripts/civil de la skill) en el PYTHONPATH.
+Requiere el paquete `civil`: junto a este archivo, en el PYTHONPATH, o en
+scripts/civil de la skill (se encuentra solo al ejecutar desde la skill).
 """
 from __future__ import annotations
 
+import sys
 from dataclasses import dataclass
+from pathlib import Path
 
-from civil.acero import area_acero, barra, numero_barras
-from civil.concreto_e060 import NORMA, PHI, As_flexion, Vc, espaciamiento_estribos, verificar_flexion
-from civil.unidades import TONF_A_KGF, TONF_M_A_KGF_CM
-from civil.verificacion import Verificacion
+# Ejecutada desde la skill, la librería está en ../scripts: así no hace falta PYTHONPATH.
+_LIBRERIA_SKILL = Path(__file__).resolve().parent.parent / "scripts"
+if (_LIBRERIA_SKILL / "civil").is_dir():
+    sys.path.insert(0, str(_LIBRERIA_SKILL))
+
+from civil.acero import area_acero, barra, numero_barras  # noqa: E402
+from civil.concreto_e060 import NORMA, PHI, As_flexion, Vc, espaciamiento_estribos, verificar_flexion  # noqa: E402
+from civil.unidades import TONF_A_KGF, TONF_M_A_KGF_CM  # noqa: E402
+from civil.verificacion import Verificacion  # noqa: E402
 
 # --- Constantes normativas -------------------------------------------------
 FACTOR_CM = 1.4  # E.060 Art. 9.2.1
