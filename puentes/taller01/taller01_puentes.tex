@@ -142,47 +142,48 @@ $V = 70$ km/h:
   (sardinel de 150 a 200 mm).
 \item \textbf{Baranda metálica peatonal:} 0.15 m de ancho y 0.15 t/m (valor adoptado en proyectos
   peruanos: 0.10 a 0.15 t/m).
-\item \textbf{Barrera New Jersey de 32''}: $H = 0.813$ m, base $B = 0.61$ m, área $0.2540\ \mathrm{m^2}$.
+\item \textbf{Barrera New Jersey}: $H = 0.813$ m, ancho $B = 0.40$ m; para el peso se usa el área de la
+  tabla de clase, $0.2540\ \mathrm{m^2}$ (conservador).
 \end{itemize}
 La vereda va en el lado exterior de cada puente; hacia el separador central basta la barrera.
 
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[x=1.0cm,y=1.0cm]
-\fill[gray!25] (2.260,0) rectangle (15.460,0.0762);
-\draw[fill=gray!8] (0,-0.400) rectangle (16.070,0);
-\node[font=\scriptsize] at (8.035,-0.200) {Losa maciza $t = 0.40$ m};
+\fill[gray!25] (2.050,0) rectangle (15.250,0.0762);
+\draw[fill=gray!8] (0,-0.400) rectangle (15.650,0);
+\node[font=\scriptsize] at (7.825,-0.200) {Losa maciza $t = 0.40$ m};
 \draw[fill=gray!15] (0.150,0) rectangle (1.650,0.200);
 \draw[fill=gray!55] (0,0) rectangle (0.150,1.300);
 \node[font=\tiny, rotate=90, anchor=south] at (0,0.750) {Baranda};
-\draw[fill=gray!35] (1.650,0.000) -- (2.260,0.000) -- (2.260,0.076) -- (1.904,0.330) -- (1.802,0.813) -- (1.650,0.813) -- cycle;
-\draw[fill=gray!35] (16.070,0.000) -- (15.460,0.000) -- (15.460,0.076) -- (15.816,0.330) -- (15.918,0.813) -- (16.070,0.813) -- cycle;
+\draw[fill=gray!35] (1.650,0.000) -- (2.050,0.000) -- (2.050,0.076) -- (1.817,0.330) -- (1.750,0.813) -- (1.650,0.813) -- cycle;
+\draw[fill=gray!35] (15.650,0.000) -- (15.250,0.000) -- (15.250,0.076) -- (15.483,0.330) -- (15.550,0.813) -- (15.650,0.813) -- cycle;
 \draw[<->, >=Stealth] (0.000,1.55) -- (0.150,1.55) node[midway, above, font=\tiny] {0.15};
 \draw[gray] (0.000,1.45) -- (0.000,1.6500000000000001);
 \draw[<->, >=Stealth] (0.150,1.55) -- (1.650,1.55) node[midway, above, font=\scriptsize] {1.50};
 \draw[gray] (0.150,1.45) -- (0.150,1.6500000000000001);
 \node[font=\scriptsize] at (0.900,0.350) {Vereda};
-\draw[<->, >=Stealth] (1.650,1.55) -- (2.260,1.55) node[midway, above, font=\tiny] {0.61};
+\draw[<->, >=Stealth] (1.650,1.55) -- (2.050,1.55) node[midway, above, font=\tiny] {0.40};
 \draw[gray] (1.650,1.45) -- (1.650,1.6500000000000001);
-\draw[<->, >=Stealth] (2.260,1.55) -- (5.260,1.55) node[midway, above, font=\scriptsize] {3.00};
-\draw[gray] (2.260,1.45) -- (2.260,1.6500000000000001);
-\node[font=\scriptsize] at (3.760,0.350) {Berma ext.};
-\draw[<->, >=Stealth] (5.260,1.55) -- (8.860,1.55) node[midway, above, font=\scriptsize] {3.60};
-\draw[gray] (5.260,1.45) -- (5.260,1.6500000000000001);
-\node[font=\scriptsize] at (7.060,0.350) {Carril 1};
-\draw[<->, >=Stealth] (8.860,1.55) -- (12.460,1.55) node[midway, above, font=\scriptsize] {3.60};
-\draw[gray] (8.860,1.45) -- (8.860,1.6500000000000001);
-\node[font=\scriptsize] at (10.660,0.350) {Carril 2};
-\draw[<->, >=Stealth] (12.460,1.55) -- (15.460,1.55) node[midway, above, font=\scriptsize] {3.00};
-\draw[gray] (12.460,1.45) -- (12.460,1.6500000000000001);
-\node[font=\scriptsize] at (13.960,0.350) {Berma int.};
-\draw[<->, >=Stealth] (15.460,1.55) -- (16.070,1.55) node[midway, above, font=\tiny] {0.61};
-\draw[gray] (15.460,1.45) -- (15.460,1.6500000000000001);
-\draw[gray] (16.070,1.45) -- (16.070,1.6500000000000001);
-\draw[dashed] (8.860,0.0762) -- (8.860,0.20);
-\draw[<->, >=Stealth] (0,-0.850) -- (16.070,-0.850) node[midway, fill=white, font=\scriptsize, inner sep=1pt] {$W = 16.07$ m};
-\draw[decorate, decoration={brace, mirror, amplitude=4pt}] (0,-0.480) -- (1.644,-0.480) node[midway, below=3pt, font=\scriptsize] {$E_{b,v}$};
-\draw[decorate, decoration={brace, amplitude=4pt}] (16.070,-0.480) -- (14.426,-0.480) node[midway, below=3pt, font=\scriptsize] {$E_{b,s}$};
+\draw[<->, >=Stealth] (2.050,1.55) -- (5.050,1.55) node[midway, above, font=\scriptsize] {3.00};
+\draw[gray] (2.050,1.45) -- (2.050,1.6500000000000001);
+\node[font=\scriptsize] at (3.550,0.350) {Berma ext.};
+\draw[<->, >=Stealth] (5.050,1.55) -- (8.650,1.55) node[midway, above, font=\scriptsize] {3.60};
+\draw[gray] (5.050,1.45) -- (5.050,1.6500000000000001);
+\node[font=\scriptsize] at (6.850,0.350) {Carril 1};
+\draw[<->, >=Stealth] (8.650,1.55) -- (12.250,1.55) node[midway, above, font=\scriptsize] {3.60};
+\draw[gray] (8.650,1.45) -- (8.650,1.6500000000000001);
+\node[font=\scriptsize] at (10.450,0.350) {Carril 2};
+\draw[<->, >=Stealth] (12.250,1.55) -- (15.250,1.55) node[midway, above, font=\scriptsize] {3.00};
+\draw[gray] (12.250,1.45) -- (12.250,1.6500000000000001);
+\node[font=\scriptsize] at (13.750,0.350) {Berma int.};
+\draw[<->, >=Stealth] (15.250,1.55) -- (15.650,1.55) node[midway, above, font=\tiny] {0.40};
+\draw[gray] (15.250,1.45) -- (15.250,1.6500000000000001);
+\draw[gray] (15.650,1.45) -- (15.650,1.6500000000000001);
+\draw[dashed] (8.650,0.0762) -- (8.650,0.20);
+\draw[<->, >=Stealth] (0,-0.850) -- (15.650,-0.850) node[midway, fill=white, font=\scriptsize, inner sep=1pt] {$W = 15.65$ m};
+\draw[decorate, decoration={brace, mirror, amplitude=4pt}] (0,-0.480) -- (1.636,-0.480) node[midway, below=3pt, font=\scriptsize] {$E_{b,v}$};
+\draw[decorate, decoration={brace, amplitude=4pt}] (15.650,-0.480) -- (14.132,-0.480) node[midway, below=3pt, font=\scriptsize] {$E_{b,s}$};
 \end{tikzpicture}
 \caption{Sección transversal de un puente (un sentido). Cotas en m. $E_{b,v}$ y $E_{b,s}$: franjas de borde
 del lado de la vereda y del lado del separador.}
@@ -191,8 +192,8 @@ del lado de la vereda y del lado del separador.}
 Ancho de calzada, ancho total y número de carriles de diseño:
 \begin{align*}
 w &= 3.00 + 7.20 + 3.00 = 13.20\uM \quad\text{(entre caras de barreras)}\\
-W &= \underbrace{0.15 + 1.50 + 0.61}_{\text{baranda + vereda + barrera}} + 13.20 + 0.61
- = \boxed{16.07\uM}\\
+W &= \underbrace{0.15 + 1.50 + 0.40}_{\text{baranda + vereda + barrera}} + 13.20 + 0.40
+ = \boxed{15.65\uM}\\
 N_L &= \operatorname{ENT}\!\left(\frac{w}{3.60}\right) = \operatorname{ENT}\!\left(\frac{13.20}{3.60}\right)
  = \operatorname{ENT}(3.67) = \boxed{3\ \text{carriles de diseño}} \refn{AASHTO 3.6.1.1.1}
 \end{align*}
@@ -325,22 +326,22 @@ M_{LL+IM} &= (1+IM)\,M_{\text{tándem}} + M_{\text{carril}} = 1.33 \times 28.095
 
 \subsection*{1.8 Ancho de franja equivalente}
 Fórmulas de clase (AASHTO 4.6.2.3, en metros), con $L_1 = \min(L;\ 18.26) = 6.096\uM$ y el ancho total
-$W = 16.07\uM$:
+$W = 15.65\uM$:
 \begin{align*}
 \intertext{\textbf{Un solo carril cargado}, $W_1 = \min(W;\ 9.14) = 9.14\uM$:}
 E_1 &= 0.25 + 0.42\sqrt{L_1 W_1} = 0.25 + 0.42\sqrt{6.096\times9.14} = 0.25 + 0.42\,(7.4644) = \boxed{3.385\uM}
-\intertext{\textbf{Múltiples carriles cargados}, $W_1 = \min(W;\ 18) = 16.07\uM$:}
-E_m &= 2.10 + 0.12\sqrt{L_1 W_1} = 2.10 + 0.12\sqrt{6.096\times16.07} = 2.10 + 0.12\,(9.8976)
- = 3.288\uM\\
- &\le \frac{W}{N_L} = \frac{16.07}{3} = 5.357\uM \quad\Rightarrow\quad E_m = \boxed{3.288\uM}
+\intertext{\textbf{Múltiples carriles cargados}, $W_1 = \min(W;\ 18) = 15.65\uM$:}
+E_m &= 2.10 + 0.12\sqrt{L_1 W_1} = 2.10 + 0.12\sqrt{6.096\times15.65} = 2.10 + 0.12\,(9.7674)
+ = 3.272\uM\\
+ &\le \frac{W}{N_L} = \frac{15.65}{3} = 5.217\uM \quad\Rightarrow\quad E_m = \boxed{3.272\uM}
 \end{align*}
 
 \textbf{Momento de sobrecarga por metro} (fórmula de clase $M_{LL} = m\,M_{SC\text{-}V}/E \times b$, con $b = 1$ m y
 $m$ de la Tabla 3.6.1.1.2-1): se calcula con un carril y con varios carriles, y se toma el mayor.
 \begin{align*}
 \text{Un carril } (m = 1.20):\quad M_{LL+IM} &= \frac{1.20 \times 41.789}{3.385} = 14.814\uTmm\\
-\text{Múltiples carriles } (m = 1.00):\quad M_{LL+IM} &= \frac{1.00 \times 41.789}{3.288} = 12.711\uTmm\\
-\Rightarrow\quad M_{LL+IM} &= \max(14.814;\ 12.711) = \boxed{14.814\uTmm}
+\text{Múltiples carriles } (m = 1.00):\quad M_{LL+IM} &= \frac{1.00 \times 41.789}{3.272} = 12.771\uTmm\\
+\Rightarrow\quad M_{LL+IM} &= \max(14.814;\ 12.771) = \boxed{14.814\uTmm}
 \end{align*}
 \textbf{Gobierna un carril.}
 {\small Para múltiples carriles se usa $m = 1.00$ (2 carriles cargados, como en clase); con 3 carriles,
@@ -348,38 +349,38 @@ $m = 0.85$ daría un momento menor.}
 
 
 \textbf{Franjas de borde} (AASHTO 4.6.2.1.4b): distancia del borde a la cara de la barrera + 0.30 m + $E/4$, sin
-pasar de $E/2$ ni de 1.80 m, con $E = \min(E_1;\ E_m) = 3.288$ m:
+pasar de $E/2$ ni de 1.80 m, con $E = \min(E_1;\ E_m) = 3.272$ m:
 \begin{align*}
-\text{Lado separador:}\quad E_{b,s} &= 0.61 + 0.30 + \frac{3.288}{4} = 1.732\uM
- \ \le\ \min(1.644;\ 1.80) \ \Rightarrow\ \boxed{E_{b,s} = 1.644\uM}\\
-\text{Lado vereda:}\quad E_{b,v} &= 2.26 + 0.30 + \frac{3.288}{4} = 3.382\uM
- \ \le\ \min(1.644;\ 1.80) \ \Rightarrow\ \boxed{E_{b,v} = 1.644\uM}
+\text{Lado separador:}\quad E_{b,s} &= 0.40 + 0.30 + \frac{3.272}{4} = 1.518\uM
+ \ \le\ \min(1.636;\ 1.80) \ \Rightarrow\ \boxed{E_{b,s} = 1.518\uM}\\
+\text{Lado vereda:}\quad E_{b,v} &= 2.05 + 0.30 + \frac{3.272}{4} = 3.168\uM
+ \ \le\ \min(1.636;\ 1.80) \ \Rightarrow\ \boxed{E_{b,v} = 1.636\uM}
 \end{align*}
-Del lado de la vereda la franja ($1.644$ m) no llega a la cara de la barrera, que está a $2.26$ m del borde:
+Del lado de la vereda la franja ($1.636$ m) no llega a la cara de la barrera, que está a $2.05$ m del borde:
 ningún vehículo la carga. Lleva losa, vereda, barrera, baranda y la carga peatonal.
 
 \subsection*{1.9 Momentos por metro de ancho y combinaciones de carga}
 \textbf{Franja interior:} $M_{LL+IM} = 14.814\uTmm$ (mayor entre un carril y múltiples carriles, sección 1.8).
 
-\textbf{Franja de borde, lado separador} ($E_{b,s} = 1.644$ m): la barrera
+\textbf{Franja de borde, lado separador} ($E_{b,s} = 1.518$ m): la barrera
 ($0.2540\ \mathrm{m^2}\times 2.40 = 0.610\uTpm$) va en la franja; el asfalto solo cubre
-$E_{b,s} - 0.61 = 1.034\uM$; la carga viva es una línea de ruedas más la parte del carril que
+$E_{b,s} - 0.40 = 1.118\uM$; la carga viva es una línea de ruedas más la parte del carril que
 cae en la franja, con $m = 1.20$ (un carril cargado):
 \begin{align*}
-w_{DC} &= 0.967 + \frac{0.610}{1.644} = 1.337\uTpm \qquad
-w_{DW} = 0.1707\times\frac{1.034}{1.644} = 0.1073\uTpm\\
-M_{LL+IM} &= \frac{m\left[\,0.5\,(1.33)\,M_{\text{tándem}} + M_{\text{carril}}\,\dfrac{E_{b,s} - 0.61}{3.00}\right]}{E_{b,s}}
- = \frac{1.20\left[\,0.5(1.33)(28.095) + 4.422\,\dfrac{1.034}{3.00}\right]}{1.644}\\
- &= \frac{1.20\,(20.207)}{1.644} = 14.751\uTmm
+w_{DC} &= 0.967 + \frac{0.610}{1.518} = 1.368\uTpm \qquad
+w_{DW} = 0.1707\times\frac{1.118}{1.518} = 0.1257\uTpm\\
+M_{LL+IM} &= \frac{m\left[\,0.5\,(1.33)\,M_{\text{tándem}} + M_{\text{carril}}\,\dfrac{E_{b,s} - 0.40}{3.00}\right]}{E_{b,s}}
+ = \frac{1.20\left[\,0.5(1.33)(28.095) + 4.422\,\dfrac{1.118}{3.00}\right]}{1.518}\\
+ &= \frac{1.20\,(20.331)}{1.518} = 16.072\uTmm
 \end{align*}
 
-\textbf{Franja de borde, lado vereda} ($E_{b,v} = 1.644$ m): vereda ($0.20 \times 2.40 \times 1.50
+\textbf{Franja de borde, lado vereda} ($E_{b,v} = 1.636$ m): vereda ($0.20 \times 2.40 \times 1.50
 = 0.720\uTpm$), barrera ($0.610\uTpm$), baranda ($0.15\uTpm$) y carga peatonal
 $PL = 3.6\ \text{kPa} = 0.367\ \mathrm{t/m^2}$ en toda la vereda (AASHTO 3.6.1.6):
 \begin{align*}
-w_{DC} &= 0.967 + \frac{0.720 + 0.610 + 0.15}{1.644} = 1.867\uTpm \qquad
-w_{PL} = \frac{0.367 \times 1.50}{1.644} = 0.335\uTpm\\
-M_{DC} &= 1.867 \times 4.6452 = 8.671\uTmm \qquad M_{PL} = 0.335 \times 4.6452 = 1.556\uTmm
+w_{DC} &= 0.967 + \frac{0.720 + 0.610 + 0.15}{1.636} = 1.871\uTpm \qquad
+w_{PL} = \frac{0.367 \times 1.50}{1.636} = 0.336\uTpm\\
+M_{DC} &= 1.871 \times 4.6452 = 8.691\uTmm \qquad M_{PL} = 0.336 \times 4.6452 = 1.563\uTmm
 \end{align*}
 
 \textbf{Combinaciones} (AASHTO Tabla 3.4.1-1):
@@ -391,10 +392,10 @@ Reemplazando los momentos de cada franja:
 \begin{align*}
 M_u^{\text{int}} &= 1.05\,\big[1.25(4.490) + 1.50(0.793) + 1.75(14.814)\big] = 1.05\,(32.727)
  = \boxed{34.363\uTmm}\\
-M_u^{\text{sep.}} &= 1.05\,\big[1.25(6.213) + 1.50(0.499) + 1.75(14.751)\big] = 1.05\,(34.328)
- = \boxed{36.045\uTmm}\\
-M_u^{\text{vereda}} &= 1.05\,\big[1.25(8.671) + 1.75(1.556)\big] = 1.05\,(13.561)
- = \boxed{14.239\uTmm}
+M_u^{\text{sep.}} &= 1.05\,\big[1.25(6.356) + 1.50(0.584) + 1.75(16.072)\big] = 1.05\,(36.946)
+ = \boxed{38.794\uTmm}\\
+M_u^{\text{vereda}} &= 1.05\,\big[1.25(8.691) + 1.75(1.563)\big] = 1.05\,(13.599)
+ = \boxed{14.279\uTmm}
 \end{align*}
 
 \begin{center}\small
@@ -404,8 +405,8 @@ Franja & Ancho (m) & $M_{DC}$ & $M_{DW}$ & $M_{LL+IM}$ & $M_{PL}$ & $M_u$ (Resis
  & & \multicolumn{6}{c}{(t$\cdot$m/m)}\\
 \midrule
 Interior & 1.000 & 4.490 & 0.793 & 14.814 & -- & \textbf{34.363} & 20.097\\
-Borde, lado separador & 1.644 & 6.213 & 0.499 & 14.751 & -- & \textbf{36.045} & 21.463\\
-Borde, lado vereda & 1.644 & 8.671 & -- & -- & 1.556 & \textbf{14.239} & 10.227\\
+Borde, lado separador & 1.518 & 6.356 & 0.584 & 16.072 & -- & \textbf{38.794} & 23.011\\
+Borde, lado vereda & 1.636 & 8.691 & -- & -- & 1.563 & \textbf{14.279} & 10.254\\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -430,25 +431,25 @@ c = \frac{a}{\beta_1} = 4.54\uCm \qquad \frac{c}{d} = 0.128 \le 0.42 \ok\\
  \ \ge\ M_u = 34.363 \ok\ (D/C = 0.92)
 \end{align*}
 
-\textbf{Franja de borde, lado separador} ($M_u = 3\,604\,480$ kg$\cdot$cm):
+\textbf{Franja de borde, lado separador} ($M_u = 3\,879\,361$ kg$\cdot$cm):
 \begin{align*}
-\frac{2M_u}{\phi\,0.85 f'_c b d^2} &= 0.1780 \quad\Rightarrow\quad
-A_s = \frac{0.85(420)(100)(35.50)}{4\,200}\left[1-\sqrt{1-0.1780}\right] = 28.18\uCmm\\
-s &= \frac{100(5.10)}{28.18} = 18.1\uCm
- \ \Rightarrow\ \boxed{\varnothing\,1'' \ @\ 17.5\uCm}\quad (A_s = 29.14\uCmm)\\
-a &= 3.43\uCm \qquad c = 4.54\uCm \qquad \frac{c}{d} = 0.128 \le 0.42 \ok\\
-\phi M_n &= 0.90(29.14)(4\,200)\left(35.50 - \frac{3.43}{2}\right) = 37.218\uTmm
- \ \ge\ M_u = 36.045 \ok\ (D/C = 0.97)
+\frac{2M_u}{\phi\,0.85 f'_c b d^2} &= 0.1916 \quad\Rightarrow\quad
+A_s = \frac{0.85(420)(100)(35.50)}{4\,200}\left[1-\sqrt{1-0.1916}\right] = 30.45\uCmm\\
+s &= \frac{100(5.10)}{30.45} = 16.8\uCm
+ \ \Rightarrow\ \boxed{\varnothing\,1'' \ @\ 15.0\uCm}\quad (A_s = 34.00\uCmm)\\
+a &= 4.00\uCm \qquad c = 5.29\uCm \qquad \frac{c}{d} = 0.149 \le 0.42 \ok\\
+\phi M_n &= 0.90(34.00)(4\,200)\left(35.50 - \frac{4.00}{2}\right) = 43.054\uTmm
+ \ \ge\ M_u = 38.794 \ok\ (D/C = 0.90)
 \end{align*}
 
-\textbf{Franja de borde, lado vereda} ($M_u = 1\,423\,932$ kg$\cdot$cm):
+\textbf{Franja de borde, lado vereda} ($M_u = 1\,427\,917$ kg$\cdot$cm):
 \begin{align*}
-\frac{2M_u}{\phi\,0.85 f'_c b d^2} &= 0.0703 \quad\Rightarrow\quad A_s = 10.80\uCmm\\
-s &= \frac{100(5.10)}{10.80} = 47.2\uCm \ \Rightarrow\ 45.0\uCm\ \text{(máximo 45 cm)}
+\frac{2M_u}{\phi\,0.85 f'_c b d^2} &= 0.0705 \quad\Rightarrow\quad A_s = 10.84\uCmm\\
+s &= \frac{100(5.10)}{10.84} = 47.1\uCm \ \Rightarrow\ 45.0\uCm\ \text{(máximo 45 cm)}
 \end{align*}
 Por resistencia bastaría $\varnothing\,1''\ @\ 45.0$ cm, pero no cumple fisuración (Servicio I). Se cierra el
 espaciamiento hasta cumplir: $\boxed{\varnothing\,1''\ @\ 30.0\uCm}$ ($A_s = 17.00\uCmm$),
-$\phi M_n = 22.170\uTmm \ge 14.239$ \ok, $c/d = 0.075 \le 0.42$ \ok.
+$\phi M_n = 22.170\uTmm \ge 14.279$ \ok, $c/d = 0.075 \le 0.42$ \ok.
 
 \subsection*{1.11 Verificaciones}
 
@@ -459,14 +460,14 @@ M_{cr} = \gamma_3\,\gamma_1\,f_r\,S_c = 0.67(1.6)(41.23)\,\frac{100(40)^2}{6}
  = 0.67(1.6)(41.23)(26\,667) = 11.786\uTmm
 \end{align*}
 Interior: $\min(11.786;\ 45.703) = 11.786 \le \phi M_n = 37.218$ \ok\qquad
-Borde sep.: $11.786 \le 37.218$ \ok\qquad Borde vereda: $\min(11.786;\ 18.938) = 11.786 \le 22.170$ \ok
+Borde sep.: $11.786 \le 43.054$ \ok\qquad Borde vereda: $\min(11.786;\ 18.991) = 11.786 \le 22.170$ \ok
 
 Cuantía mínima (criterio de clase):
 \begin{equation*}
 \rho_{\min} = 0.03\,\frac{f'_c}{f_y} = 0.03\,\frac{420}{4\,200} = 0.0030 \ \Rightarrow\
 A_{s,\min} = 0.0030(100)(35.50) = 10.65\uCmm
 \end{equation*}
-$A_{s,\min} = 10.65 \le 29.14$ (interior), $29.14$ (borde separador) y $17.00$ cm$^2$/m (borde vereda) \ok
+$A_{s,\min} = 10.65 \le 29.14$ (interior), $34.00$ (borde separador) y $17.00$ cm$^2$/m (borde vereda) \ok
 
 \paragraph{b) Fisuración, Servicio I} (AASHTO 5.6.7). Sección fisurada transformada, $n = 6.49$:
 \begin{align*}
@@ -485,8 +486,8 @@ Franja & $A_s$ & $nA_s$ & $y$ & $jd$ & $M_s$ & $f_{ss}$ & $s_{\max}$ & $s$\\
  & (cm$^2$/m) & (cm$^2$) & (cm) & (cm) & (t$\cdot$m/m) & (kg/cm$^2$) & (cm) & (cm)\\
 \midrule
 Interior & 29.14 & 189.01 & 9.85 & 32.22 & 20.097 & 2\,140.5 & 28.2 & 17.5 \ok\\
-Borde sep. & 29.14 & 189.01 & 9.85 & 32.22 & 21.463 & 2\,285.9 & 25.8 & 17.5 \ok\\
-Borde vereda & 17.00 & 110.25 & 7.81 & 32.90 & 10.227 & 1\,828.7 & 34.6 & 30.0 \ok\\
+Borde sep. & 34.00 & 220.51 & 10.50 & 32.00 & 23.011 & 2\,115.0 & 28.7 & 15.0 \ok\\
+Borde vereda & 17.00 & 110.25 & 7.81 & 32.90 & 10.254 & 1\,833.6 & 34.4 & 30.0 \ok\\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -503,12 +504,12 @@ f_{\min} &= \frac{M_{DC} + M_{DW}}{A_s\,j d} \qquad
 \Delta F_{TH} = 24 - 0.33 f_{\min}\ [\text{ksi}] = 1687 - 0.33 f_{\min}\ [\text{kg/cm}^2]
 \end{align*}
 Interior: $f_{\min} = 562.7$, $\Delta f = 1\,016.9 \le \Delta F_{TH} = 1\,501.7\uKg$ \ok\qquad
-Borde sep.: $f_{\min} = 714.8$, $\Delta f = 1\,016.9 \le 1\,451.5\uKg$ \ok
+Borde sep.: $f_{\min} = 637.8$, $\Delta f = 877.6 \le 1\,476.9\uKg$ \ok
 
 La franja del lado de la vereda no recibe carga vehicular, así que no se revisa por fatiga.
 
 {\small Con la 9.ª edición de AASHTO ($\gamma = 1.75$ y $\Delta F_{TH} = 26 - 22 f_{\min}/f_y$ ksi) también cumple:
-interior $1\,186.4 \le 1\,620.8$; borde $1\,186.4 \le 1\,564.7\uKg$.}
+interior $1\,186.4 \le 1\,620.8$; borde $1\,023.8 \le 1\,593.1\uKg$.}
 
 \paragraph{d) Cortante.} Las losas diseñadas por flexión con el método de franjas de AASHTO 4.6.2.3 se consideran
 satisfactorias por corte (AASHTO 5.12.2.1), así que no se diseña refuerzo transversal por corte.
@@ -518,8 +519,8 @@ Refuerzo transversal inferior (distribución), como porcentaje del acero princip
 \begin{align*}
 \%\,A_{s,\text{dist}} &= \frac{1750}{\sqrt{S}} = \frac{1750}{\sqrt{6\,096}} = 22.41\% \le 50\%
  \refn{AASHTO 9.7.3.2}\\
-A_{s,\text{dist}} &= 22.41\% \times 29.14 = 6.53\uCmm
- \ \Rightarrow\ \boxed{\varnothing\,5/8''\ @\ 30.0\uCm}\quad (6.67\uCmm)
+A_{s,\text{dist}} &= 22.41\% \times 34.00 = 7.62\uCmm
+ \ \Rightarrow\ \boxed{\varnothing\,5/8''\ @\ 25.0\uCm}\quad (8.00\uCmm)
 \end{align*}
 Se calcula con el mayor $A_s$ colocado (franja de borde) para usar un solo espaciamiento en todo el ancho;
 va transversal, en la cara inferior, sobre el acero principal.
@@ -542,14 +543,14 @@ El NAME sale del estudio hidrológico; con él se fija la altura de los estribos
 \subsection*{1.14 Resumen}
 \begin{resultado}
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}lX@{}}
-Vía & Autopista de Segunda Clase; dos puentes gemelos de $W = 16.07$ m, $N_L = 3$\\
-Sección & baranda 0.15 + vereda 1.50 + barrera 0.61 + berma 3.00 + calzada 7.20
- + berma 3.00 + barrera 0.61 = 16.07 m\\
+Vía & Autopista de Segunda Clase; dos puentes gemelos de $W = 15.65$ m, $N_L = 3$\\
+Sección & baranda 0.15 + vereda 1.50 + barrera 0.40 + berma 3.00 + calzada 7.20
+ + berma 3.00 + barrera 0.40 = 15.65 m\\
 Superestructura & losa maciza simplemente apoyada, $L = 6.096$ m, $t = 0.40$ m, $f'_c = 420\uKg$\\
-Momentos de diseño & $M_u = 34.363$ (interior), $36.045$ (borde separador) y $14.239$ t$\cdot$m/m (borde vereda)\\
-Acero principal inferior & $\varnothing\,1''\ @\ 17.5$ cm (interior y borde separador, 1.644 m)
- \quad $\varnothing\,1''\ @\ 30.0$ cm (borde vereda, 1.644 m)\\
-Distribución inferior & $\varnothing\,5/8''\ @\ 30.0$ cm, transversal\\
+Momentos de diseño & $M_u = 34.363$ (interior), $38.794$ (borde separador) y $14.279$ t$\cdot$m/m (borde vereda)\\
+Acero principal inferior & $\varnothing\,1''\ @\ 17.5$ cm (interior y borde separador, 1.518 m)
+ \quad $\varnothing\,1''\ @\ 30.0$ cm (borde vereda, 1.636 m)\\
+Distribución inferior & $\varnothing\,5/8''\ @\ 25.0$ cm, transversal\\
 Temperatura superior & $\varnothing\,1/2''\ @\ 17.5$ cm, en ambas direcciones\\
 Rasante & $\ge$ NAME + 2.976 m
 \end{tabularx}
@@ -568,20 +569,20 @@ Cuantía mínima $\rho \ge 0.03\,f'_c/f_y$ (franja interior) & 10.65 & 29.14 & c
 Servicio I, $f_{ss} \le 0.6 f_y$ (franja interior) & 2\,140.47 & 2\,520.00 & kg/cm$^2$ & 0.85 & \textcolor{ok}{\textbf{CUMPLE}} \\
 Fisuración, $s \le s_{\max}$ (franja interior) & 17.50 & 28.21 & cm & 0.62 & \textcolor{ok}{\textbf{CUMPLE}} \\
 Fatiga I, $\Delta f \le \Delta F_{TH}$ (franja interior) & 1\,016.91 & 1\,501.68 & kg/cm$^2$ & 0.68 & \textcolor{ok}{\textbf{CUMPLE}} \\
-Resistencia I, $M_u \le \phi M_n$ (franja borde separador) & 36.04 & 37.22 & t$\cdot$m/m & 0.97 & \textcolor{ok}{\textbf{CUMPLE}} \\
-Ductilidad $c/d \le 0.42$ (franja borde separador) & 0.128 & 0.420 &  & 0.30 & \textcolor{ok}{\textbf{CUMPLE}} \\
-Acero mínimo $\min(M_{cr};\,1.33M_u) \le \phi M_n$ (franja borde separador) & 11.79 & 37.22 & t$\cdot$m/m & 0.32 & \textcolor{ok}{\textbf{CUMPLE}} \\
-Cuantía mínima $\rho \ge 0.03\,f'_c/f_y$ (franja borde separador) & 10.65 & 29.14 & cm$^2$/m & 0.37 & \textcolor{ok}{\textbf{CUMPLE}} \\
-Servicio I, $f_{ss} \le 0.6 f_y$ (franja borde separador) & 2\,285.90 & 2\,520.00 & kg/cm$^2$ & 0.91 & \textcolor{ok}{\textbf{CUMPLE}} \\
-Fisuración, $s \le s_{\max}$ (franja borde separador) & 17.50 & 25.84 & cm & 0.68 & \textcolor{ok}{\textbf{CUMPLE}} \\
-Fatiga I, $\Delta f \le \Delta F_{TH}$ (franja borde separador) & 1\,016.91 & 1\,451.48 & kg/cm$^2$ & 0.70 & \textcolor{ok}{\textbf{CUMPLE}} \\
-Resistencia I, $M_u \le \phi M_n$ (franja borde vereda) & 14.24 & 22.17 & t$\cdot$m/m & 0.64 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Resistencia I, $M_u \le \phi M_n$ (franja borde separador) & 38.79 & 43.05 & t$\cdot$m/m & 0.90 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Ductilidad $c/d \le 0.42$ (franja borde separador) & 0.149 & 0.420 &  & 0.35 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Acero mínimo $\min(M_{cr};\,1.33M_u) \le \phi M_n$ (franja borde separador) & 11.79 & 43.05 & t$\cdot$m/m & 0.27 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Cuantía mínima $\rho \ge 0.03\,f'_c/f_y$ (franja borde separador) & 10.65 & 34.00 & cm$^2$/m & 0.31 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Servicio I, $f_{ss} \le 0.6 f_y$ (franja borde separador) & 2\,115.03 & 2\,520.00 & kg/cm$^2$ & 0.84 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Fisuración, $s \le s_{\max}$ (franja borde separador) & 15.00 & 28.66 & cm & 0.52 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Fatiga I, $\Delta f \le \Delta F_{TH}$ (franja borde separador) & 877.57 & 1\,476.88 & kg/cm$^2$ & 0.59 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Resistencia I, $M_u \le \phi M_n$ (franja borde vereda) & 14.28 & 22.17 & t$\cdot$m/m & 0.64 & \textcolor{ok}{\textbf{CUMPLE}} \\
 Ductilidad $c/d \le 0.42$ (franja borde vereda) & 0.075 & 0.420 &  & 0.18 & \textcolor{ok}{\textbf{CUMPLE}} \\
 Acero mínimo $\min(M_{cr};\,1.33M_u) \le \phi M_n$ (franja borde vereda) & 11.79 & 22.17 & t$\cdot$m/m & 0.53 & \textcolor{ok}{\textbf{CUMPLE}} \\
 Cuantía mínima $\rho \ge 0.03\,f'_c/f_y$ (franja borde vereda) & 10.65 & 17.00 & cm$^2$/m & 0.63 & \textcolor{ok}{\textbf{CUMPLE}} \\
-Servicio I, $f_{ss} \le 0.6 f_y$ (franja borde vereda) & 1\,828.75 & 2\,520.00 & kg/cm$^2$ & 0.73 & \textcolor{ok}{\textbf{CUMPLE}} \\
-Fisuración, $s \le s_{\max}$ (franja borde vereda) & 30.00 & 34.55 & cm & 0.87 & \textcolor{ok}{\textbf{CUMPLE}} \\
-Acero de distribución & 6.53 & 6.67 & cm$^2$/m & 0.98 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Servicio I, $f_{ss} \le 0.6 f_y$ (franja borde vereda) & 1\,833.64 & 2\,520.00 & kg/cm$^2$ & 0.73 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Fisuración, $s \le s_{\max}$ (franja borde vereda) & 30.00 & 34.44 & cm & 0.87 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Acero de distribución & 7.62 & 8.00 & cm$^2$/m & 0.95 & \textcolor{ok}{\textbf{CUMPLE}} \\
 Acero de temperatura (cara superior) & 7.28 & 7.37 & cm$^2$/m & 0.99 & \textcolor{ok}{\textbf{CUMPLE}} \\
 \bottomrule
 \end{tabular}

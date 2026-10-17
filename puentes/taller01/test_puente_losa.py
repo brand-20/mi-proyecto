@@ -86,14 +86,14 @@ def test_diseno_completo_cumple():
     r = pl.calcular(pl.TALLER_AL)
     assert all(v.cumple for v in r["verificaciones"])
     interior, borde_separador, borde_vereda = r["franjas"]
-    # W = 0.15 + 1.50 + 0.61 + 13.20 + 0.61 = 16.07 m
-    assert pl.TALLER_AL.W == pytest.approx(16.07)
+    # W = 0.15 + 1.50 + 0.40 + 13.20 + 0.40 = 15.65 m
+    assert pl.TALLER_AL.W == pytest.approx(15.65)
     # Un carril gobierna: 1.20 × 41.789 / 3.385 = 14.814 t·m/m
     assert r["M_1carril"] == pytest.approx(14.814, abs=1e-3)
     assert interior.M_u == pytest.approx(34.363, abs=1e-3)
     # La franja de la vereda no recibe vehículos; su espaciamiento lo controla la fisuración
     assert not borde_vereda.vehicular
-    assert (interior.s, borde_separador.s, borde_vereda.s) == (17.5, 17.5, 30.0)
+    assert (interior.s, borde_separador.s, borde_vereda.s) == (17.5, 15.0, 30.0)
 
 
 def test_vereda_segun_velocidad_y_pesos_de_clase():
