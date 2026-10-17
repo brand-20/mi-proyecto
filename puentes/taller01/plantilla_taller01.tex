@@ -130,30 +130,41 @@ Gálibo hidráulico & $\ge <<galibo>>\uM$ & Importancia & puente importante\\
 Con IMDA $= <<imda>>$ veh/día $\in [4\,001;\ 6\,000]$ la vía es \textbf{<<clase>>} (DG-2018, Art.~101.01):
 calzadas separadas por un separador central de 1.00 a 6.00 m, cada una con dos o más carriles de 3.60 m.
 Como las calzadas van separadas, se proyectan \textbf{dos puentes gemelos}, uno por sentido, iguales entre sí.
-Cada puente lleva 2 carriles de 3.60 m, bermas y barreras tipo New Jersey:
+Anchos de cada puente, según las tablas de clase (DG-2018) para autopista de 2.ª clase, orografía 3 y
+$V = <<V>>$ km/h:
+\begin{itemize}[leftmargin=*,itemsep=1pt]
+\item \textbf{Calzada:} 7.20 m, 2 carriles de 3.60 m (Tabla 304.01).
+\item \textbf{Bermas:} <<b_ext>> m a cada lado (Tabla 304.02).
+\item \textbf{Vereda} (criterio de clase, ``frontera de la velocidad''): con $V < 70$ km/h basta una vereda de 1.20 m;
+  con $V \ge 70$ km/h la vereda efectiva mínima es 1.50 m y se separa del tránsito con una barrera rígida tipo
+  New Jersey, con baranda peatonal exterior de altura $\ge 1.10$ m. Como $V = <<V>> \ge 70$ km/h
+  $\Rightarrow$ \textbf{vereda de <<vereda>> m}, de concreto $f'_c = <<fc_vereda>>$ kg/cm$^2$ y <<e_vereda>> m de espesor
+  (sardinel de 150 a 200 mm).
+\item \textbf{Baranda metálica peatonal:} <<baranda>> m de ancho y <<w_baranda>> t/m (valor adoptado en proyectos
+  peruanos: 0.10 a 0.15 t/m).
+\item \textbf{Barrera New Jersey de 32''}: $H = 0.813$ m, base $B = <<barrera>>$ m, área $<<A_barrera>>\ \mathrm{m^2}$.
+\end{itemize}
+La vereda va en el lado exterior de cada puente; hacia el separador central basta la barrera.
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[x=1.28cm,y=1.28cm]
+\begin{tikzpicture}[x=1.0cm,y=1.0cm]
 <<tikz_seccion>>
 \end{tikzpicture}
-\caption{Sección transversal de un puente (un sentido). Cotas en m. $E_b$: franja de borde.}
+\caption{Sección transversal de un puente (un sentido). Cotas en m. $E_{b,v}$ y $E_{b,s}$: franjas de borde
+del lado de la vereda y del lado del separador.}
 \end{figure}
 
 Ancho de calzada, ancho total y número de carriles de diseño:
 \begin{align*}
-w &= <<b_int>> + <<calzada>> + <<b_ext>> = <<w_libre>>\uM \quad\text{(entre caras de barreras)}\qquad
-W = <<w_libre>> + 2(<<barrera>>) = <<W>>\uM\\
+w &= <<b_ext>> + <<calzada>> + <<b_int>> = <<w_libre>>\uM \quad\text{(entre caras de barreras)}\\
+W &= \underbrace{<<baranda>> + <<vereda>> + <<barrera>>}_{\text{baranda + vereda + barrera}} + <<w_libre>> + <<barrera>>
+ = \boxed{<<W>>\uM}\\
 N_L &= \operatorname{ENT}\!\left(\frac{w}{3.60}\right) = \operatorname{ENT}\!\left(\frac{<<w_libre>>}{3.60}\right)
  = \operatorname{ENT}(<<w_sobre_36>>) = \boxed{<<NL>>\ \text{carriles de diseño}} \refn{AASHTO 3.6.1.1.1}
 \end{align*}
 Aunque solo se pintan 2 carriles, AASHTO cuenta el ancho de las bermas porque en el futuro pueden usarse como carril.
 
-\begin{supuesto}
-\textbf{Supuesto por confirmar:} bermas de <<b_int>> m (interior) y <<b_ext>> m (exterior). Verificar con la
-Tabla 304.02 de la DG-2018 y con el criterio del curso. El diseño depende poco de este dato: con una berma
-exterior de 3.00 m, $N_L$ sigue siendo 3 y el ancho de franja $E$ cambia menos de 1\%.
-\end{supuesto}
 
 \subsection*{1.3 Tipo de superestructura y predimensionamiento}
 Losa maciza de concreto armado, simplemente apoyada, con el refuerzo principal paralelo al tráfico.
@@ -187,11 +198,13 @@ $\eta_D = 1.00$ (diseño convencional), $\eta_R = 1.00$ (redundancia convenciona
 En Servicio y Fatiga se usa $\eta = 1.00$.
 
 \subsection*{1.6 Cargas permanentes (franja interior de 1 m)}
-Peso propio de la losa (DC) y del asfalto (DW), por metro de ancho, con $\gamma_c = 2.40$ y
-$\gamma_{asf} = 2.25\ \mathrm{t/m^3}$:
+Pesos específicos de la tabla de clase (MTC-2016): con $f'_c = <<fc>> > 350$ kg/cm$^2$ el concreto simple pesa
+$2240 + 0.23\,f'_c$ y el armado 80 kg/m$^3$ más; la superficie bituminosa pesa 2240 kg/m$^3$.
 \begin{align*}
-w_{DC} &= t\,\gamma_c = <<t>> \times 2.40 = <<w_DC>>\uTpm \refn{AASHTO Tabla 3.5.1-1}\\
-w_{DW} &= e\,\gamma_{asf} = 0.0762 \times 2.25 = <<w_DW>>\uTpm\\
+\gamma_c &= 2240 + 0.23(<<fc>>) + 80 = <<gamma_c_kg>>\ \mathrm{kg/m^3} \qquad
+\gamma_{c,\text{vereda}} = 2320 + 80 = 2400\ \mathrm{kg/m^3}\ \ (f'_c = <<fc_vereda>>) \refn{MTC-2016}\\
+w_{DC} &= t\,\gamma_c = <<t>> \times <<gamma_c>> = <<w_DC>>\uTpm\\
+w_{DW} &= e\,\gamma_{asf} = 0.0762 \times <<gamma_asf>> = <<w_DW>>\uTpm\\
 M_{DC} &= w_{DC}\,\frac{L^2}{8} = <<w_DC>> \times \frac{<<L>>^2}{8} = <<w_DC>> \times <<L2_8>> = <<M_DC>>\uTmm\\
 M_{DW} &= w_{DW}\,\frac{L^2}{8} = <<w_DW>> \times <<L2_8>> = <<M_DW>>\uTmm
 \end{align*}
@@ -295,47 +308,65 @@ $m$ de la Tabla 3.6.1.1.2-1): se calcula con un carril y con varios carriles, y 
 $m = 0.85$ daría un momento menor.}
 
 
-\textbf{Franja de borde} (AASHTO 4.6.2.1.4b): distancia del borde a la cara de la barrera + 0.30 m + $E/4$:
-\begin{equation*}
-E_b = <<barrera>> + 0.30 + \frac{<<E>>}{4} = <<Eb_formula>>\uM \ \le\ \min\!\left(\frac{E}{2} = <<E_2>>;\ 1.80\right)
-\ \Rightarrow\ \boxed{E_b = <<Eb>>\uM}
-\end{equation*}
+\textbf{Franjas de borde} (AASHTO 4.6.2.1.4b): distancia del borde a la cara de la barrera + 0.30 m + $E/4$, sin
+pasar de $E/2$ ni de 1.80 m, con $E = \min(E_1;\ E_m) = <<E>>$ m:
+\begin{align*}
+\text{Lado separador:}\quad E_{b,s} &= <<barrera>> + 0.30 + \frac{<<E>>}{4} = <<Eb_formula>>\uM
+ \ \le\ \min(<<E_2>>;\ 1.80) \ \Rightarrow\ \boxed{E_{b,s} = <<Eb>>\uM}\\
+\text{Lado vereda:}\quad E_{b,v} &= <<dist_vereda>> + 0.30 + \frac{<<E>>}{4} = <<Ebv_formula>>\uM
+ \ \le\ \min(<<E_2>>;\ 1.80) \ \Rightarrow\ \boxed{E_{b,v} = <<Ebv>>\uM}
+\end{align*}
+Del lado de la vereda la franja ($<<Ebv>>$ m) no llega a la cara de la barrera, que está a $<<dist_vereda>>$ m del borde:
+ningún vehículo la carga. Lleva losa, vereda, barrera, baranda y la carga peatonal.
 
 \subsection*{1.9 Momentos por metro de ancho y combinaciones de carga}
 \textbf{Franja interior:} $M_{LL+IM} = <<MLL_i>>\uTmm$ (mayor entre un carril y múltiples carriles, sección 1.8).
 
-\textbf{Franja de borde:} la barrera ($<<A_barrera>>\ \mathrm{m^2}\times 2.40 = <<w_barrera>>\uTpm$) va en $E_b$; el
-asfalto solo cubre $E_b - <<barrera>> = <<ancho_carril_borde>>\uM$; la carga viva es una línea de ruedas
-más la parte del carril que cae en la franja, con $m = 1.20$ (un carril cargado):
+\textbf{Franja de borde, lado separador} ($E_{b,s} = <<Eb>>$ m): la barrera
+($<<A_barrera>>\ \mathrm{m^2}\times <<gamma_cv>> = <<w_barrera>>\uTpm$) va en la franja; el asfalto solo cubre
+$E_{b,s} - <<barrera>> = <<ancho_carril_borde>>\uM$; la carga viva es una línea de ruedas más la parte del carril que
+cae en la franja, con $m = 1.20$ (un carril cargado):
 \begin{align*}
 w_{DC} &= <<w_DC>> + \frac{<<w_barrera>>}{<<Eb>>} = <<wDC_b>>\uTpm \qquad
 w_{DW} = <<w_DW>>\times\frac{<<ancho_carril_borde>>}{<<Eb>>} = <<wDW_b>>\uTpm\\
-M_{LL+IM} &= \frac{m\left[\,0.5\,(1.33)\,M_{\text{tándem}} + M_{\text{carril}}\,\dfrac{E_b - <<barrera>>}{3.00}\right]}{E_b}
+M_{LL+IM} &= \frac{m\left[\,0.5\,(1.33)\,M_{\text{tándem}} + M_{\text{carril}}\,\dfrac{E_{b,s} - <<barrera>>}{3.00}\right]}{E_{b,s}}
  = \frac{1.20\left[\,0.5(1.33)(<<M_veh>>) + <<M_carril>>\,\dfrac{<<ancho_carril_borde>>}{3.00}\right]}{<<Eb>>}\\
  &= \frac{1.20\,(<<M_LL_borde_linea>>)}{<<Eb>>} = <<MLL_b>>\uTmm
 \end{align*}
 
+\textbf{Franja de borde, lado vereda} ($E_{b,v} = <<Ebv>>$ m): vereda ($<<e_vereda>> \times <<gamma_cv>> \times <<vereda>>
+= <<w_vereda_total>>\uTpm$), barrera ($<<w_barrera>>\uTpm$), baranda ($<<w_baranda>>\uTpm$) y carga peatonal
+$PL = 3.6\ \text{kPa} = <<PL>>\ \mathrm{t/m^2}$ en toda la vereda (AASHTO 3.6.1.6):
+\begin{align*}
+w_{DC} &= <<w_DC>> + \frac{<<w_vereda_total>> + <<w_barrera>> + <<w_baranda>>}{<<Ebv>>} = <<wDC_v>>\uTpm \qquad
+w_{PL} = \frac{<<PL>> \times <<vereda>>}{<<Ebv>>} = <<w_PL_v>>\uTpm\\
+M_{DC} &= <<wDC_v>> \times <<L2_8>> = <<MDC_v>>\uTmm \qquad M_{PL} = <<w_PL_v>> \times <<L2_8>> = <<MPL_v>>\uTmm
+\end{align*}
+
 \textbf{Combinaciones} (AASHTO Tabla 3.4.1-1):
 \begin{align*}
-\text{Resistencia I:}\quad M_u &= \eta\,\big[1.25\,M_{DC} + 1.50\,M_{DW} + 1.75\,M_{LL+IM}\big]\\
-\text{Servicio I:}\quad M_s &= 1.00\,M_{DC} + 1.00\,M_{DW} + 1.00\,M_{LL+IM}
+\text{Resistencia I:}\quad M_u &= \eta\,\big[1.25\,M_{DC} + 1.50\,M_{DW} + 1.75\,(M_{LL+IM} + M_{PL})\big]\\
+\text{Servicio I:}\quad M_s &= 1.00\,M_{DC} + 1.00\,M_{DW} + 1.00\,(M_{LL+IM} + M_{PL})
 \end{align*}
 Reemplazando los momentos de cada franja:
 \begin{align*}
 M_u^{\text{int}} &= <<eta>>\,\big[1.25(<<MDC_i>>) + 1.50(<<MDW_i>>) + 1.75(<<MLL_i>>)\big] = <<eta>>\,(<<Mu_sin_eta_i>>)
  = \boxed{<<Mu_i>>\uTmm}\\
-M_u^{\text{borde}} &= <<eta>>\,\big[1.25(<<MDC_b>>) + 1.50(<<MDW_b>>) + 1.75(<<MLL_b>>)\big] = <<eta>>\,(<<Mu_sin_eta_b>>)
- = \boxed{<<Mu_b>>\uTmm}
+M_u^{\text{sep.}} &= <<eta>>\,\big[1.25(<<MDC_b>>) + 1.50(<<MDW_b>>) + 1.75(<<MLL_b>>)\big] = <<eta>>\,(<<Mu_sin_eta_b>>)
+ = \boxed{<<Mu_b>>\uTmm}\\
+M_u^{\text{vereda}} &= <<eta>>\,\big[1.25(<<MDC_v>>) + 1.75(<<MPL_v>>)\big] = <<eta>>\,(<<Mu_sin_eta_v>>)
+ = \boxed{<<Mu_v>>\uTmm}
 \end{align*}
 
 \begin{center}\small
-\begin{tabular}{lccccccc}
+\begin{tabular}{lcccccccc}
 \toprule
-Franja & Ancho (m) & $M_{DC}$ & $M_{DW}$ & $M_{LL+IM}$ & $M_u$ (Resist. I) & $M_s$ (Serv. I) \\
- & & \multicolumn{5}{c}{(t$\cdot$m/m)}\\
+Franja & Ancho (m) & $M_{DC}$ & $M_{DW}$ & $M_{LL+IM}$ & $M_{PL}$ & $M_u$ (Resist. I) & $M_s$ (Serv. I) \\
+ & & \multicolumn{6}{c}{(t$\cdot$m/m)}\\
 \midrule
-Interior & 1.000 & <<MDC_i>> & <<MDW_i>> & <<MLL_i>> & \textbf{<<Mu_i>>} & <<Ms_i>>\\
-Borde & <<Eb>> & <<MDC_b>> & <<MDW_b>> & <<MLL_b>> & \textbf{<<Mu_b>>} & <<Ms_b>>\\
+Interior & 1.000 & <<MDC_i>> & <<MDW_i>> & <<MLL_i>> & -- & \textbf{<<Mu_i>>} & <<Ms_i>>\\
+Borde, lado separador & <<Eb>> & <<MDC_b>> & <<MDW_b>> & <<MLL_b>> & -- & \textbf{<<Mu_b>>} & <<Ms_b>>\\
+Borde, lado vereda & <<Ebv>> & <<MDC_v>> & -- & -- & <<MPL_v>> & \textbf{<<Mu_v>>} & <<Ms_v>>\\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -360,7 +391,7 @@ c = \frac{a}{\beta_1} = <<c_i>>\uCm \qquad \frac{c}{d} = <<cd_i>> \le 0.42 \ok\\
  \ \ge\ M_u = <<Mu_i>> \ok\ (D/C = <<DC_Mu_i>>)
 \end{align*}
 
-\textbf{Franja de borde} ($M_u = <<Mu_kgcm_b>>$ kg$\cdot$cm):
+\textbf{Franja de borde, lado separador} ($M_u = <<Mu_kgcm_b>>$ kg$\cdot$cm):
 \begin{align*}
 \frac{2M_u}{\phi\,0.85 f'_c b d^2} &= <<k_b>> \quad\Rightarrow\quad
 A_s = \frac{0.85(<<fc>>)(100)(<<d>>)}{<<fy>>}\left[1-\sqrt{1-<<k_b>>}\right] = <<Asreq_b>>\uCmm\\
@@ -371,6 +402,15 @@ a &= <<a_b>>\uCm \qquad c = <<c_b>>\uCm \qquad \frac{c}{d} = <<cd_b>> \le 0.42 \
  \ \ge\ M_u = <<Mu_b>> \ok\ (D/C = <<DC_Mu_b>>)
 \end{align*}
 
+\textbf{Franja de borde, lado vereda} ($M_u = <<Mu_kgcm_v>>$ kg$\cdot$cm):
+\begin{align*}
+\frac{2M_u}{\phi\,0.85 f'_c b d^2} &= <<k_v>> \quad\Rightarrow\quad A_s = <<Asreq_v>>\uCmm\\
+s &= \frac{100(<<area_bp>>)}{<<Asreq_v>>} = <<s_teo_v>>\uCm \ \Rightarrow\ <<sres_v>>\uCm\ \text{(máximo 45 cm)}
+\end{align*}
+Por resistencia bastaría $\varnothing\,<<bp>>\ @\ <<sres_v>>$ cm, pero no cumple fisuración (Servicio I). Se cierra el
+espaciamiento hasta cumplir: $\boxed{\varnothing\,<<bp>>\ @\ <<s_v>>\uCm}$ ($A_s = <<As_v>>\uCmm$),
+$\phi M_n = <<phiMn_v>>\uTmm \ge <<Mu_v>>$ \ok, $c/d = <<cd_v>> \le 0.42$ \ok.
+
 \subsection*{1.11 Verificaciones}
 
 \paragraph{a) Acero mínimo} (AASHTO 5.6.3.3): $\phi M_n \ge \min(M_{cr};\ 1.33\,M_u)$, con
@@ -380,13 +420,14 @@ M_{cr} = \gamma_3\,\gamma_1\,f_r\,S_c = 0.67(1.6)(<<fr>>)\,\frac{100(<<t_cm>>)^2
  = 0.67(1.6)(<<fr>>)(<<Sc>>) = <<Mcr>>\uTmm
 \end{align*}
 Interior: $\min(<<Mcr>>;\ <<Mu133_i>>) = <<Mmin_i>> \le \phi M_n = <<phiMn_i>>$ \ok\qquad
-Borde: $\min(<<Mcr>>;\ <<Mu133_b>>) = <<Mmin_b>> \le <<phiMn_b>>$ \ok
+Borde sep.: $<<Mmin_b>> \le <<phiMn_b>>$ \ok\qquad Borde vereda: $\min(<<Mcr>>;\ <<Mu133_v>>) = <<Mmin_v>> \le <<phiMn_v>>$ \ok
 
 Cuantía mínima (criterio de clase):
 \begin{equation*}
 \rho_{\min} = 0.03\,\frac{f'_c}{f_y} = 0.03\,\frac{<<fc>>}{<<fy>>} = <<rho_min>> \ \Rightarrow\
-A_{s,\min} = <<rho_min>>(100)(<<d>>) = <<As_min_rho>>\uCmm \le <<As_i>> \text{ y } <<As_b>> \ok
+A_{s,\min} = <<rho_min>>(100)(<<d>>) = <<As_min_rho>>\uCmm
 \end{equation*}
+$A_{s,\min} = <<As_min_rho>> \le <<As_i>>$ (interior), $<<As_b>>$ (borde separador) y $<<As_v>>$ cm$^2$/m (borde vereda) \ok
 
 \paragraph{b) Fisuración, Servicio I} (AASHTO 5.6.7). Sección fisurada transformada, $n = <<n>>$:
 \begin{align*}
@@ -401,10 +442,12 @@ cumple con más holgura).
 \begin{center}\footnotesize
 \begin{tabular}{lcccccccc}
 \toprule
-Franja & $A_s$ (cm$^2$/m) & $nA_s$ (cm$^2$) & $y$ (cm) & $jd$ (cm) & $M_s$ (t$\cdot$m/m) & $f_{ss}$ (kg/cm$^2$) & $s_{\max}$ (cm) & $s$ (cm)\\
+Franja & $A_s$ & $nA_s$ & $y$ & $jd$ & $M_s$ & $f_{ss}$ & $s_{\max}$ & $s$\\
+ & (cm$^2$/m) & (cm$^2$) & (cm) & (cm) & (t$\cdot$m/m) & (kg/cm$^2$) & (cm) & (cm)\\
 \midrule
 Interior & <<As_i>> & <<nAs_i>> & <<y_i>> & <<jd_i>> & <<Ms_i>> & <<fss_i>> & <<smax_i>> & <<s_i>> \ok\\
-Borde & <<As_b>> & <<nAs_b>> & <<y_b>> & <<jd_b>> & <<Ms_b>> & <<fss_b>> & <<smax_b>> & <<s_b>> \ok\\
+Borde sep. & <<As_b>> & <<nAs_b>> & <<y_b>> & <<jd_b>> & <<Ms_b>> & <<fss_b>> & <<smax_b>> & <<s_b>> \ok\\
+Borde vereda & <<As_v>> & <<nAs_v>> & <<y_v>> & <<jd_v>> & <<Ms_v>> & <<fss_v>> & <<smax_v>> & <<s_v>> \ok\\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -421,7 +464,9 @@ f_{\min} &= \frac{M_{DC} + M_{DW}}{A_s\,j d} \qquad
 \Delta F_{TH} = 24 - 0.33 f_{\min}\ [\text{ksi}] = 1687 - 0.33 f_{\min}\ [\text{kg/cm}^2]
 \end{align*}
 Interior: $f_{\min} = <<fmin_i>>$, $\Delta f = <<df_i>> \le \Delta F_{TH} = <<umbral_i>>\uKg$ \ok\qquad
-Borde: $f_{\min} = <<fmin_b>>$, $\Delta f = <<df_b>> \le <<umbral_b>>\uKg$ \ok
+Borde sep.: $f_{\min} = <<fmin_b>>$, $\Delta f = <<df_b>> \le <<umbral_b>>\uKg$ \ok
+
+La franja del lado de la vereda no recibe carga vehicular, así que no se revisa por fatiga.
 
 {\small Con la 9.ª edición de AASHTO ($\gamma = 1.75$ y $\Delta F_{TH} = 26 - 22 f_{\min}/f_y$ ksi) también cumple:
 interior $<<df9_i>> \le <<umbral9_i>>$; borde $<<df9_b>> \le <<umbral9_b>>\uKg$.}
@@ -459,9 +504,12 @@ El NAME sale del estudio hidrológico; con él se fija la altura de los estribos
 \begin{resultado}
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}lX@{}}
 Vía & <<clase>>; dos puentes gemelos de $W = <<W>>$ m, $N_L = <<NL>>$\\
+Sección & baranda <<baranda>> + vereda <<vereda>> + barrera <<barrera>> + berma <<b_ext>> + calzada <<calzada>>
+ + berma <<b_int>> + barrera <<barrera>> = <<W>> m\\
 Superestructura & losa maciza simplemente apoyada, $L = <<L>>$ m, $t = <<t>>$ m, $f'_c = <<fc>>\uKg$\\
-Momentos de diseño & $M_u = <<Mu_i>>$ t$\cdot$m/m (interior) \quad $M_u = <<Mu_b>>$ t$\cdot$m/m (borde)\\
-Acero principal inferior & $\varnothing\,<<bp>>\ @\ <<s_i>>$ cm (interior) \quad $\varnothing\,<<bp>>\ @\ <<s_b>>$ cm (franjas de borde de <<Eb>> m)\\
+Momentos de diseño & $M_u = <<Mu_i>>$ (interior), $<<Mu_b>>$ (borde separador) y $<<Mu_v>>$ t$\cdot$m/m (borde vereda)\\
+Acero principal inferior & $\varnothing\,<<bp>>\ @\ <<s_i>>$ cm (interior y borde separador, <<Eb>> m)
+ \quad $\varnothing\,<<bp>>\ @\ <<s_v>>$ cm (borde vereda, <<Ebv>> m)\\
 Distribución inferior & $\varnothing\,<<bd>>\ @\ <<s_dist>>$ cm, transversal\\
 Temperatura superior & $\varnothing\,<<bt>>\ @\ <<s_temp>>$ cm, en ambas direcciones\\
 Rasante & $\ge$ NAME + <<rasante>> m
@@ -563,7 +611,7 @@ cada 1 mm confirma $M_{\max} = <<p2_M_barrido>>\uTm$.
 
 \vspace{4pt}
 {\small\textit{Cálculos generados con \texttt{puente\_losa.py} (mismos datos que este documento). Supuestos por
-confirmar: anchos de berma y sección de la barrera (1.2), factor de exposición $\gamma_e$ (1.11-b) y edición
+confirmar: espesor de vereda de <<e_vereda>> m (1.2), factor de exposición $\gamma_e$ (1.11-b) y edición
 de AASHTO para Fatiga (1.11-c).}}
 
 \end{document}

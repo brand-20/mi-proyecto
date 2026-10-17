@@ -85,8 +85,20 @@ def test_espesor_menor_al_minimo_falla():
 def test_diseno_completo_cumple():
     r = pl.calcular(pl.TALLER_AL)
     assert all(v.cumple for v in r["verificaciones"])
-    interior, borde = r["franjas"]
+    interior, borde_separador, borde_vereda = r["franjas"]
+    # W = 0.15 + 1.50 + 0.61 + 13.20 + 0.61 = 16.07 m
+    assert pl.TALLER_AL.W == pytest.approx(16.07)
     # Un carril gobierna: 1.20 × 41.789 / 3.385 = 14.814 t·m/m
     assert r["M_1carril"] == pytest.approx(14.814, abs=1e-3)
-    assert interior.M_u == pytest.approx(34.328, abs=1e-3)
-    assert (interior.s, borde.s) == (17.5, 15.0)
+    assert interior.M_u == pytest.approx(34.363, abs=1e-3)
+    # La franja de la vereda no recibe vehículos; su espaciamiento lo controla la fisuración
+    assert not borde_vereda.vehicular
+    assert (interior.s, borde_separador.s, borde_vereda.s) == (17.5, 17.5, 30.0)
+
+
+def test_vereda_segun_velocidad_y_pesos_de_clase():
+    assert pl.ancho_vereda(60) == 1.20
+    assert pl.ancho_vereda(70) == 1.50
+    # 2240 + 0.23(420) + 80 = 2416.6 kg/m³; f'c <= 350: 2320 + 80 = 2400 kg/m³
+    assert pl.gamma_concreto(420) == pytest.approx(2.4166)
+    assert pl.gamma_concreto(280) == pytest.approx(2.400)

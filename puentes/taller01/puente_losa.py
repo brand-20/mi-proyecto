@@ -30,8 +30,10 @@ PIE = 0.3048  # m
 PULGADA = 0.0254  # m
 KSI_A_MPA = 6.894757
 
-GAMMA_CONCRETO = 2.40  # tonf/m³, concreto armado (AASHTO Tabla 3.5.1-1)
-GAMMA_ASFALTO = 2.25  # tonf/m³, superficie bituminosa (AASHTO Tabla 3.5.1-1)
+GAMMA_ASFALTO = 2.24  # tonf/m³, superficies de rodamiento bituminosas (MTC-2016, tabla de clase)
+CONCRETO_ARMADO_ADICIONAL = 0.08  # tonf/m³ que se suman al concreto simple (AASHTO C3.5.1)
+PL = 0.367  # tonf/m², carga peatonal 3.6 kPa (AASHTO 3.6.1.6)
+VELOCIDAD_FRONTERA = 70  # km/h, criterio de clase "frontera de la velocidad"
 ES = 200_000 * MPA_A_KGF_CM2  # kgf/cm² (AASHTO 5.4.3.2)
 
 # Carga viva HL-93 (AASHTO 3.6.1.2), en tonf: 8 kip, 32 kip, 25 kip, 0.64 klf
@@ -255,6 +257,19 @@ def numero_carriles(ancho_libre: float) -> int:
     return int(ancho_libre / ANCHO_CARRIL_DISENO + TOL)
 
 
+def gamma_concreto(f_c: float) -> float:
+    """Peso unitario del concreto armado [tonf/m³] (MTC-2016, tabla de clase): concreto simple
+    2320 kg/m³ si f'c <= 350 kgf/cm², o 2240 + 0.23 f'c si 350 < f'c <= 1050; más 80 kg/m³."""
+    simple = 2320 if f_c <= 350 else 2240 + 0.23 * f_c
+    return simple / 1000 + CONCRETO_ARMADO_ADICIONAL
+
+
+def ancho_vereda(V: float) -> float:
+    """Vereda efectiva mínima [m] (criterio de clase): 1.20 m si V < 70 km/h; 1.50 m si V >= 70 km/h,
+    y entonces separada del tránsito por una barrera rígida tipo New Jersey."""
+    return 1.50 if V >= VELOCIDAD_FRONTERA else 1.20
+
+
 def E_un_carril(L: float, W: float) -> float:
     """Ancho de franja [m], un carril: 0.25 + 0.42 √(L1·W1), L1 = min(L, 18.26), W1 = min(W, 9.14)
     (AASHTO 4.6.2.3-1 en m, como en clase)."""
@@ -387,7 +402,12 @@ class DatosPuente:
     d12: float  # m, ejes 1-2 del camión HL-93 (dato del taller)
     d23: float  # m, ejes 2-3 del camión HL-93 (dato del taller)
     galibo: float  # m, gálibo hidráulico mínimo
+    velocidad: float  # km/h, velocidad de diseño
     # Sección transversal de un puente (una calzada), en m
+    ancho_baranda: float
+    w_baranda: float  # tonf/m, baranda metálica peatonal
+    e_vereda: float  # m, espesor de la vereda sobre la losa
+    f_c_vereda: float  # kgf/cm², veredas y barreras
     ancho_barrera: float
     berma_interior: float
     carriles_via: int
@@ -411,9 +431,19 @@ class DatosPuente:
         return self.berma_interior + self.carriles_via * self.ancho_carril_via + self.berma_exterior
 
     @property
+    def vereda(self) -> float:
+        """Ancho efectivo de vereda [m], según la velocidad de diseño."""
+        return ancho_vereda(self.velocidad)
+
+    @property
+    def dist_vereda(self) -> float:
+        """Del borde de la losa a la cara de la barrera del lado de la vereda [m]."""
+        return self.ancho_baranda + self.vereda + self.ancho_barrera
+
+    @property
     def W(self) -> float:
-        """Ancho total del puente, borde a borde [m]."""
-        return self.ancho_libre + 2 * self.ancho_barrera
+        """Ancho total del puente, borde a borde [m]: baranda + vereda + barrera + calzada + barrera."""
+        return self.dist_vereda + self.ancho_libre + self.ancho_barrera
 
     @property
     def d(self) -> float:
@@ -436,12 +466,17 @@ TALLER_AL = DatosPuente(
     d12=3.00,
     d23=3.50,
     galibo=2.50,
-    ancho_barrera=0.40,
-    berma_interior=1.00,  # VERIFICAR con DG-2018 Tabla 304.02 y el criterio del curso
+    velocidad=70,
+    ancho_baranda=0.15,  # criterio de clase
+    w_baranda=0.15,  # tonf/m, baranda metálica: 0.10-0.15 en proyectos peruanos (tabla de clase)
+    e_vereda=0.20,  # sardinel: óptimo 150 mm, máximo 200 mm (lámina de clase)
+    f_c_vereda=280.0,  # veredas, barandas y barreras: 210 a 280 kgf/cm² (clase)
+    ancho_barrera=0.61,  # New Jersey 32": base 0.610 m (tabla de clase)
+    berma_interior=3.00,  # DG-2018 Tabla 304.02: autopista 2.ª clase, orografía 3, 70 km/h
     carriles_via=2,
-    ancho_carril_via=3.60,  # DG-2018 Art. 101.01, autopistas
-    berma_exterior=2.60,  # VERIFICAR con DG-2018 Tabla 304.02 y el criterio del curso
-    area_barrera=0.2028,  # barrera New Jersey TL-4, VERIFICAR con el plano de detalle
+    ancho_carril_via=3.60,  # DG-2018 Tabla 304.01: calzada 7.20 m
+    berma_exterior=3.00,  # DG-2018 Tabla 304.02
+    area_barrera=0.254,  # New Jersey 32" (tabla de clase)
     t=0.40,
     recubrimiento=4.5,  # re al eje de la barra, criterio de clase
     barra_principal='1"',
@@ -466,11 +501,27 @@ class Franja:
     M_DC: float  # tonf·m/m
     M_DW: float
     M_LL: float  # LL+IM, tonf·m/m
+    M_PL: float  # peatonal, tonf·m/m
+    vehicular: bool  # la franja recibe carga vehicular
     M_u: float
     M_s: float  # Servicio I
     As_req: float  # cm²/m
-    s: float  # cm
+    s_res: float  # cm, espaciamiento por resistencia
+    s: float  # cm, espaciamiento adoptado (cumple también Servicio I)
     As: float  # cm²/m
+
+
+def espaciamiento_servicio(s: float, M_s: float, p: DatosPuente, b: float, d: float, h: float, n: float) -> float:
+    """Cierra el espaciamiento [cm] de a PASO_ESPACIAMIENTO hasta cumplir Servicio I (AASHTO 5.6.7):
+    fss <= 0.6 fy y s <= s_max. M_s en tonf·m/m."""
+    while True:
+        As = barra(p.barra_principal).area * 100 / s
+        fss = M_s * TONF_M_A_KGF_CM / (As * seccion_fisurada(As, b, d, n).jd)
+        if fss <= FSS_MAX * p.fy and s <= s_max_fisuracion(fss, p.gamma_e, p.recubrimiento, h) + TOL:
+            return s
+        s -= PASO_ESPACIAMIENTO
+        if s < 10:
+            raise ValueError("No se cumple fisuración con espaciamiento >= 10 cm. Usar barra mayor o más peralte.")
 
 
 def calcular(p: DatosPuente) -> dict:
@@ -490,9 +541,12 @@ def calcular(p: DatosPuente) -> dict:
     r["fr"] = fr(p.f_c)
 
     # Cargas permanentes, franja interior de 1 m
-    w_DC = p.t * GAMMA_CONCRETO
+    r["gamma_c"] = gamma_concreto(p.f_c)
+    r["gamma_cv"] = gamma_concreto(p.f_c_vereda)
+    w_DC = p.t * r["gamma_c"]
     w_DW = p.e_asfalto * GAMMA_ASFALTO
-    r["w_barrera"] = p.area_barrera * GAMMA_CONCRETO
+    r["w_barrera"] = p.area_barrera * r["gamma_cv"]
+    r["w_vereda"] = p.e_vereda * r["gamma_cv"]  # tonf/m²
     L2_8 = L**2 / 8
 
     # Carga viva por carril
@@ -514,6 +568,7 @@ def calcular(p: DatosPuente) -> dict:
     r["Em_sin_limite"] = (2100 + 0.12 * math.sqrt(min(L * 1000, 18_000) * min(p.W * 1000, 18_000))) / 1000
     r["E"] = min(r["E1"], r["Em"])
     r["Eb"] = E_borde(p.ancho_barrera, r["E"])
+    r["Ebv"] = E_borde(p.dist_vereda, r["E"])
     # Momento por metro: M = m·M_LL+IM/E con un carril y con varios; se toma el mayor
     r["M_1carril"] = M_UN_CARRIL * r["M_LL_carril"] / r["E1"]
     r["M_multi"] = M_MULTIPLES * r["M_LL_carril"] / r["Em"]
@@ -524,7 +579,7 @@ def calcular(p: DatosPuente) -> dict:
     # Franja interior
     M_DC, M_DW = w_DC * L2_8, w_DW * L2_8
     M_LL = max(r["M_1carril"], r["M_multi"])
-    franjas.append(("Interior", 1.0, w_DC, w_DW, M_DC, M_DW, M_LL))
+    franjas.append(("Interior", 1.0, w_DC, w_DW, M_DC, M_DW, M_LL, 0.0, True))
     # Franja de borde: barrera, asfalto fuera de la barrera, una línea de ruedas y su parte del carril
     Eb = r["Eb"]
     r["ancho_carril_borde"] = Eb - p.ancho_barrera
@@ -532,17 +587,37 @@ def calcular(p: DatosPuente) -> dict:
     w_DW_b = w_DW * r["ancho_carril_borde"] / Eb
     r["M_LL_borde_linea"] = 0.5 * (1 + IM) * r["M_vehicular"] + r["M_carril"] * r["ancho_carril_borde"] / ANCHO_CARGA_CARRIL
     M_LL_b = M_UN_CARRIL * r["M_LL_borde_linea"] / Eb
-    franjas.append(("Borde", Eb, w_DC_b, w_DW_b, w_DC_b * L2_8, w_DW_b * L2_8, M_LL_b))
+    franjas.append(("Borde separador", Eb, w_DC_b, w_DW_b, w_DC_b * L2_8, w_DW_b * L2_8, M_LL_b, 0.0, True))
+    # Franja de borde del lado de la vereda: losa + vereda + barrera + baranda, carga peatonal.
+    # Si la franja no pasa la cara de la barrera, ningún vehículo la carga (la barrera lo impide).
+    Ebv = r["Ebv"]
+    r["carga_borde_vereda"] = r["w_vereda"] * p.vereda + r["w_barrera"] + p.w_baranda  # tonf/m
+    w_DC_v = w_DC + r["carga_borde_vereda"] / Ebv
+    r["ancho_trafico_vereda"] = max(Ebv - p.dist_vereda, 0.0)
+    w_DW_v = w_DW * r["ancho_trafico_vereda"] / Ebv
+    if r["ancho_trafico_vereda"] > 0:
+        M_LL_v = M_UN_CARRIL * (
+            0.5 * (1 + IM) * r["M_vehicular"] + r["M_carril"] * r["ancho_trafico_vereda"] / ANCHO_CARGA_CARRIL
+        ) / Ebv
+    else:
+        M_LL_v = 0.0
+    r["w_PL_v"] = PL * p.vereda / Ebv  # toda la vereda, conservador
+    franjas.append(
+        ("Borde vereda", Ebv, w_DC_v, w_DW_v, w_DC_v * L2_8, w_DW_v * L2_8, M_LL_v, r["w_PL_v"] * L2_8, M_LL_v > 0)
+    )
 
     b, d, h = 100.0, p.d, p.t * 100
     r["franjas"] = []
-    for nombre, ancho, wdc, wdw, mdc, mdw, mll in franjas:
-        M_u = eta * (GAMMA_DC * mdc + GAMMA_DW * mdw + GAMMA_LL * mll)
-        M_s = mdc + mdw + mll
+    for nombre, ancho, wdc, wdw, mdc, mdw, mll, mpl, vehicular in franjas:
+        M_u = eta * (GAMMA_DC * mdc + GAMMA_DW * mdw + GAMMA_LL * (mll + mpl))
+        M_s = mdc + mdw + mll + mpl
         As_req = As_flexion(M_u * TONF_M_A_KGF_CM, p.f_c, p.fy, b, d)
-        s = espaciamiento(As_req, p.barra_principal, min(ESPACIAMIENTO_MAX_PRINCIPAL, 1.5 * h))
+        s_res = espaciamiento(As_req, p.barra_principal, min(ESPACIAMIENTO_MAX_PRINCIPAL, 1.5 * h))
+        s = espaciamiento_servicio(s_res, M_s, p, b, d, h, r["n"])
         As = barra(p.barra_principal).area * 100 / s
-        r["franjas"].append(Franja(nombre, ancho, wdc, wdw, mdc, mdw, mll, M_u, M_s, As_req, s, As))
+        r["franjas"].append(
+            Franja(nombre, ancho, wdc, wdw, mdc, mdw, mll, mpl, vehicular, M_u, M_s, As_req, s_res, s, As)
+        )
 
     # Verificaciones por franja
     dc = p.recubrimiento
@@ -593,8 +668,11 @@ def calcular(p: DatosPuente) -> dict:
             ),
             Verificacion(f"Servicio I, fss <= 0.6 fy ({tag})", dd["fss"], FSS_MAX * p.fy, "kgf/cm²", "AASHTO 5.6.7"),
             Verificacion(f"Fisuración, s <= s_max ({tag})", f.s, dd["s_max"], "cm", "AASHTO 5.6.7"),
-            Verificacion(f"Fatiga I, Δf <= ΔF_TH ({tag})", dd["df"], dd["umbral"], "kgf/cm²", "AASHTO 5.5.3"),
         ]
+        if f.vehicular:
+            verificaciones.append(
+                Verificacion(f"Fatiga I, Δf <= ΔF_TH ({tag})", dd["df"], dd["umbral"], "kgf/cm²", "AASHTO 5.5.3")
+            )
 
     # Acero de distribución (con el mayor As principal colocado) y de temperatura
     r["pct_dist"] = porcentaje_distribucion(L)
@@ -697,44 +775,56 @@ def _cargas(ejes: tuple[Eje, ...], a: float) -> list[tuple[int, float, float]]:
     return [(i + 1, e.P, a + e.x) for i, e in enumerate(ejes)]
 
 
-def _seccion_tikz(p: DatosPuente, Eb: float) -> str:
-    """Sección transversal de un puente, en m (la escala la fija el tikzpicture)."""
+def _seccion_tikz(p: DatosPuente, Eb: float, Ebv: float) -> str:
+    """Sección transversal de un puente, en m (la escala la fija el tikzpicture).
+
+    Izquierda: baranda, vereda y barrera (lado exterior); derecha: barrera hacia el separador.
+    """
     tramos = [
-        (p.ancho_barrera, "Barrera"),
-        (p.berma_interior, "Berma int."),
-        *[(p.ancho_carril_via, f"Carril {k + 1}") for k in range(p.carriles_via)],
+        (p.ancho_baranda, ""),
+        (p.vereda, "Vereda"),
+        (p.ancho_barrera, ""),
         (p.berma_exterior, "Berma ext."),
-        (p.ancho_barrera, "Barrera"),
+        *[(p.ancho_carril_via, f"Carril {k + 1}") for k in range(p.carriles_via)],
+        (p.berma_interior, "Berma int."),
+        (p.ancho_barrera, ""),
     ]
-    W, t, e = p.W, p.t, p.e_asfalto
-    b = p.ancho_barrera
+    W, t, e, B = p.W, p.t, p.e_asfalto, p.ancho_barrera
+    x_bar = p.ancho_baranda + p.vereda  # inicio de la barrera izquierda
     out = [
-        rf"\fill[gray!25] ({b:.3f},0) rectangle ({W - b:.3f},{e:.4f});",
+        rf"\fill[gray!25] ({p.dist_vereda:.3f},0) rectangle ({W - B:.3f},{e:.4f});",
         rf"\draw[fill=gray!8] (0,{-t:.3f}) rectangle ({W:.3f},0);",
         rf"\node[font=\scriptsize] at ({W / 2:.3f},{-t / 2:.3f}) {{Losa maciza $t = {num(t, 2)}$ m}};",
+        rf"\draw[fill=gray!15] ({p.ancho_baranda:.3f},0) rectangle ({x_bar:.3f},{p.e_vereda:.3f});",
+        rf"\draw[fill=gray!55] (0,0) rectangle ({p.ancho_baranda:.3f},{p.e_vereda + 1.10:.3f});",
+        rf"\node[font=\tiny, rotate=90, anchor=south] at (0,{p.e_vereda + 0.55:.3f}) {{Baranda}};",
     ]
-    perfil = [(0, 0), (b, 0), (b, 0.075), (0.225 * b / 0.40, 0.33), (0.15 * b / 0.40, 0.81), (0, 0.81)]
-    for espejo in (False, True):
-        pts = [((W - x) if espejo else x, y) for x, y in perfil]
+    perfil = [(0, 0), (B, 0), (B, 0.076), (0.254 * B / 0.61, 0.33), (0.152 * B / 0.61, 0.813), (0, 0.813)]
+    # Cara vertical hacia el borde exterior de cada barrera, cara de tránsito hacia la calzada
+    for origen, signo in ((x_bar, 1), (W, -1)):
+        pts = [(origen + signo * x, y) for x, y in perfil]
         out.append(r"\draw[fill=gray!35] " + " -- ".join(f"({x:.3f},{y:.3f})" for x, y in pts) + " -- cycle;")
     x = 0.0
+    y_cota = 1.55
     for ancho, texto in tramos:
-        out.append(rf"\draw[<->, >=Stealth] ({x:.3f},1.15) -- ({x + ancho:.3f},1.15) "
-                   rf"node[midway, above, font=\scriptsize] {{{num(ancho, 2)}}};")
-        out.append(rf"\draw[gray] ({x:.3f},1.05) -- ({x:.3f},1.25);")
-        if texto != "Barrera":
-            out.append(rf"\node[font=\scriptsize] at ({x + ancho / 2:.3f},0.35) {{{texto}}};")
+        fuente = r"\tiny" if ancho < 0.7 else r"\scriptsize"
+        out.append(rf"\draw[<->, >=Stealth] ({x:.3f},{y_cota}) -- ({x + ancho:.3f},{y_cota}) "
+                   rf"node[midway, above, font={fuente}] {{{num(ancho, 2)}}};")
+        out.append(rf"\draw[gray] ({x:.3f},{y_cota - 0.1}) -- ({x:.3f},{y_cota + 0.1});")
+        if texto:
+            y_txt = p.e_vereda + 0.15 if texto == "Vereda" else 0.35
+            out.append(rf"\node[font=\scriptsize] at ({x + ancho / 2:.3f},{y_txt:.3f}) {{{texto}}};")
         x += ancho
-    out.append(rf"\draw[gray] ({W:.3f},1.05) -- ({W:.3f},1.25);")
+    out.append(rf"\draw[gray] ({W:.3f},{y_cota - 0.1}) -- ({W:.3f},{y_cota + 0.1});")
     for k in range(1, p.carriles_via):
-        xc = p.ancho_barrera + p.berma_interior + k * p.ancho_carril_via
+        xc = p.dist_vereda + p.berma_exterior + k * p.ancho_carril_via
         out.append(rf"\draw[dashed] ({xc:.3f},{e:.4f}) -- ({xc:.3f},0.20);")
-    out.append(rf"\draw[<->, >=Stealth] (0,{-t - 0.35:.3f}) -- ({W:.3f},{-t - 0.35:.3f}) "
-               rf"node[midway, below, font=\scriptsize] {{$W = {num(W, 2)}$ m}};")
+    out.append(rf"\draw[<->, >=Stealth] (0,{-t - 0.45:.3f}) -- ({W:.3f},{-t - 0.45:.3f}) "
+               rf"node[midway, fill=white, font=\scriptsize, inner sep=1pt] {{$W = {num(W, 2)}$ m}};")
     out.append(rf"\draw[decorate, decoration={{brace, mirror, amplitude=4pt}}] (0,{-t - 0.08:.3f}) -- "
-               rf"({Eb:.3f},{-t - 0.08:.3f}) node[midway, below=3pt, font=\scriptsize] {{$E_b$}};")
+               rf"({Ebv:.3f},{-t - 0.08:.3f}) node[midway, below=3pt, font=\scriptsize] {{$E_{{b,v}}$}};")
     out.append(rf"\draw[decorate, decoration={{brace, amplitude=4pt}}] ({W:.3f},{-t - 0.08:.3f}) -- "
-               rf"({W - Eb:.3f},{-t - 0.08:.3f}) node[midway, below=3pt, font=\scriptsize] {{$E_b$}};")
+               rf"({W - Eb:.3f},{-t - 0.08:.3f}) node[midway, below=3pt, font=\scriptsize] {{$E_{{b,s}}$}};")
     return "\n".join(out)
 
 
@@ -752,8 +842,8 @@ DESCRIPCIONES_LATEX = (
 def valores_latex(r: dict, r2: dict) -> dict[str, str]:
     p = r["p"]
     L = p.luz
-    fi, fb = r["franjas"]
-    di, db = r["detalle"]["Interior"], r["detalle"]["Borde"]
+    fi, fb, fv = r["franjas"]
+    di, db, dv = r["detalle"]["Interior"], r["detalle"]["Borde separador"], r["detalle"]["Borde vereda"]
     mc, mt = r["M_camion"], r["M_tandem"]
     camion = r["camion"]
     v: dict[str, str] = {}
@@ -768,6 +858,25 @@ def valores_latex(r: dict, r2: dict) -> dict[str, str]:
     v["NL"] = str(r["NL"])
     v["w_sobre_36"] = num(p.ancho_libre / ANCHO_CARRIL_DISENO, 2)
     v["b_int"] = num(p.berma_interior, 2)
+    v["V"] = num(p.velocidad, 0)
+    v["vereda"] = num(p.vereda, 2)
+    v["baranda"] = num(p.ancho_baranda, 2)
+    v["w_baranda"] = num(p.w_baranda, 2)
+    v["e_vereda"] = num(p.e_vereda, 2)
+    v["fc_vereda"] = num(p.f_c_vereda, 0)
+    v["gamma_c"] = num(r["gamma_c"], 4)
+    v["gamma_c_kg"] = num(r["gamma_c"] * 1000, 1)
+    v["gamma_simple_kg"] = num(r["gamma_c"] * 1000 - 80, 1)
+    v["gamma_cv"] = num(r["gamma_cv"], 2)
+    v["gamma_asf"] = num(GAMMA_ASFALTO, 2)
+    v["w_vereda"] = num(r["w_vereda"], 3)
+    v["dist_vereda"] = num(p.dist_vereda, 2)
+    v["Ebv"] = num(r["Ebv"], 3)
+    v["Ebv_formula"] = num(p.dist_vereda + 0.30 + r["E"] / 4, 3)
+    v["carga_borde_vereda"] = num(r["carga_borde_vereda"], 3)
+    v["w_vereda_total"] = num(r["w_vereda"] * p.vereda, 3)
+    v["w_PL_v"] = num(r["w_PL_v"], 3)
+    v["PL"] = num(PL, 3)
     v["b_ext"] = num(p.berma_exterior, 2)
     v["barrera"] = num(p.ancho_barrera, 2)
     v["calzada"] = num(p.carriles_via * p.ancho_carril_via, 2)
@@ -849,7 +958,9 @@ def valores_latex(r: dict, r2: dict) -> dict[str, str]:
     v["ancho_carril_borde"] = num(r["ancho_carril_borde"], 3)
     v["M_LL_borde_linea"] = num(r["M_LL_borde_linea"], 3)
 
-    for clave, f, dd in (("i", fi, di), ("b", fb, db)):
+    for clave, f, dd in (("i", fi, di), ("b", fb, db), ("v", fv, dv)):
+        v[f"MPL_{clave}"] = num(f.M_PL, 3)
+        v[f"sres_{clave}"] = num(f.s_res, 1)
         v[f"wDC_{clave}"] = num(f.w_DC, 3)
         v[f"wDW_{clave}"] = num(f.w_DW, 4)
         v[f"MDC_{clave}"] = num(f.M_DC, 3)
@@ -931,7 +1042,7 @@ def valores_latex(r: dict, r2: dict) -> dict[str, str]:
     # Figuras: coordenadas en m; la escala horizontal la fija el tikzpicture
     v["esc"] = f"{10.5 / L:.4f}"
     v["Lr"] = f"{L:.4f}"
-    v["tikz_seccion"] = _seccion_tikz(p, r["Eb"])
+    v["tikz_seccion"] = _seccion_tikz(p, r["Eb"], r["Ebv"])
     v["tikz_tandem"] = _ejes_tikz(_cargas(r["tandem"], mt.a), L)
     v["tikz_camion"] = _ejes_tikz(_cargas(camion, mc.a), L)
     v["xc_tandem"] = f"{mt.x_critico:.4f}"
