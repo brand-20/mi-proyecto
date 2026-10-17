@@ -57,15 +57,15 @@ def test_pregunta_02_momento_maximo():
 
 
 def test_anchos_de_franja():
-    # E1 = 250 + 0.42 √(6096·9000) = 3360.9 mm; Em = 2100 + 0.12 √(6096·11600) = 3109.1 mm
-    assert pl.E_un_carril(L, 11.60) == pytest.approx(3.3609, abs=1e-4)
+    # E1 = 0.25 + 0.42 √(6.096·9.14) = 3.385 m; Em = 2.10 + 0.12 √(6.096·11.60) = 3.109 m
+    assert pl.E_un_carril(L, 11.60) == pytest.approx(3.3851, abs=1e-4)
     assert pl.E_multiples_carriles(L, 11.60, 3) == pytest.approx(3.1091, abs=1e-4)
     assert pl.E_borde(0.40, 3.1091) == pytest.approx(1.4773, abs=1e-4)
     assert pl.numero_carriles(10.80) == 3
 
 
 def test_beta1_y_acero_por_flexion():
-    assert pl.beta_1(420) == pytest.approx(0.75)
+    assert pl.beta_1(420) == pytest.approx(0.7558, abs=1e-4)
     # M_u = 31.805 tonf·m, b = 100, d = 36.23 -> As = 24.17 cm²
     assert pl.As_flexion(31.805e5, 420, 4200, 100, 36.23) == pytest.approx(24.17, abs=0.01)
 
@@ -86,5 +86,7 @@ def test_diseno_completo_cumple():
     r = pl.calcular(pl.TALLER_AL)
     assert all(v.cumple for v in r["verificaciones"])
     interior, borde = r["franjas"]
-    assert interior.M_u == pytest.approx(31.805, abs=1e-3)
-    assert (interior.s, borde.s) == (20.0, 15.0)
+    # Un carril gobierna: 1.20 × 41.789 / 3.385 = 14.814 t·m/m
+    assert r["M_1carril"] == pytest.approx(14.814, abs=1e-3)
+    assert interior.M_u == pytest.approx(34.328, abs=1e-3)
+    assert (interior.s, borde.s) == (17.5, 15.0)

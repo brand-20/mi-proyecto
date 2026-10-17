@@ -170,11 +170,12 @@ E_c &= 15\,344\sqrt{f'_c} = 15\,344\sqrt{<<fc>>} = <<Ec>>\uKg
  \refn{AASHTO 5.4.2.4, $w_c = 2320$ kg/m$^3$}\\
 E_s &= 200\,000\ \text{MPa} = <<Es>>\uKg \qquad
 n = \frac{E_s}{E_c} = <<n>> \refn{AASHTO 5.4.3.2}\\
-\beta_1 &= 0.85 - 0.05\,\frac{f'_c-280}{70} = 0.85 - 0.05\,\frac{<<fc>>-280}{70} = <<beta1>>
+\beta_1 &= 0.85 - 0.05\,\frac{f'_c-28}{7} = 0.85 - 0.05\,\frac{<<fc_MPa>>-28}{7} = <<beta1>>
+ \quad(f'_c \text{ en MPa})
  \refn{AASHTO 5.6.2.2}\\
 f_r &= 0.63\sqrt{f'_c\,[\text{MPa}]} = 0.63\sqrt{<<fc_MPa>>}\ \text{MPa} = <<fr>>\uKg \refn{AASHTO 5.4.2.6}\\
-d &= t - r - \frac{d_b}{2} = <<t_cm>> - <<rec>> - \frac{<<db>>}{2} = <<d>>\uCm
- \quad(\text{barra } \varnothing\,<<bp>>,\ r = <<rec>>\uCm) \refn{AASHTO Tabla 5.10.1-1}
+d &= t - r_e = <<t_cm>> - <<rec>> = <<d>>\uCm
+ \quad(r_e = <<rec>>\uCm \text{ del fondo al eje de la barra}) \refn{criterio de clase}
 \end{align*}
 
 \subsection*{1.5 Modificador de cargas}
@@ -271,17 +272,28 @@ M_{LL+IM} &= (1+IM)\,M_{\text{tándem}} + M_{\text{carril}} = 1.33 \times <<M_ve
 \end{align*}
 
 \subsection*{1.8 Ancho de franja equivalente}
-Con $L_1 = \min(L;\ 18\,000) = <<L_mm>>\uMm$ y el ancho total $W = <<W_mm>>\uMm$ (AASHTO 4.6.2.3):
+Fórmulas de clase (AASHTO 4.6.2.3, en metros), con $L_1 = \min(L;\ 18.26) = <<L>>\uM$ y el ancho total
+$W = <<W>>\uM$:
 \begin{align*}
-\intertext{Un carril cargado, $W_1 = \min(W;\ 9\,000) = <<W1_1>>\uMm$:}
-E_1 &= 250 + 0.42\sqrt{L_1 W_1} = 250 + 0.42\sqrt{<<L_mm>>\times<<W1_1>>} = 250 + 0.42\,(<<raiz_1>>) = <<E1_mm>>\uMm
-\intertext{Dos o más carriles cargados, $W_1 = \min(W;\ 18\,000) = <<W1_m>>\uMm$:}
-E_m &= 2100 + 0.12\sqrt{L_1 W_1} = 2100 + 0.12\sqrt{<<L_mm>>\times<<W1_m>>} = 2100 + 0.12\,(<<raiz_m>>)
- = <<Em_mm>>\uMm\\
- &\le \frac{W}{N_L} = \frac{<<W_mm>>}{<<NL>>} = <<W_NL_mm>>\uMm \quad\Rightarrow\quad E_m = <<Em>>\uM\\
-E &= \min(E_1;\ E_m) = \min(<<E1>>;\ <<Em>>) = \boxed{<<E>>\uM}
+\intertext{\textbf{Un solo carril cargado}, $W_1 = \min(W;\ 9.14) = <<W1_1>>\uM$:}
+E_1 &= 0.25 + 0.42\sqrt{L_1 W_1} = 0.25 + 0.42\sqrt{<<L>>\times<<W1_1>>} = 0.25 + 0.42\,(<<raiz_1>>) = \boxed{<<E1_m>>\uM}
+\intertext{\textbf{Múltiples carriles cargados}, $W_1 = \min(W;\ 18) = <<W1_m>>\uM$:}
+E_m &= 2.10 + 0.12\sqrt{L_1 W_1} = 2.10 + 0.12\sqrt{<<L>>\times<<W1_m>>} = 2.10 + 0.12\,(<<raiz_m>>)
+ = <<Em_sin>>\uM\\
+ &\le \frac{W}{N_L} = \frac{<<W>>}{<<NL>>} = <<W_NL>>\uM \quad\Rightarrow\quad E_m = \boxed{<<Em>>\uM}
 \end{align*}
-Estos anchos ya incluyen el factor de presencia múltiple, así que no se vuelve a aplicar.
+
+\textbf{Momento de sobrecarga por metro} (fórmula de clase $M_{LL} = m\,M_{SC\text{-}V}/E \times b$, con $b = 1$ m y
+$m$ de la Tabla 3.6.1.1.2-1): se calcula con un carril y con varios carriles, y se toma el mayor.
+\begin{align*}
+\text{Un carril } (m = 1.20):\quad M_{LL+IM} &= \frac{1.20 \times <<M_LL_carril>>}{<<E1_m>>} = <<M_1carril>>\uTmm\\
+\text{Múltiples carriles } (m = 1.00):\quad M_{LL+IM} &= \frac{1.00 \times <<M_LL_carril>>}{<<Em>>} = <<M_multi>>\uTmm\\
+\Rightarrow\quad M_{LL+IM} &= \max(<<M_1carril>>;\ <<M_multi>>) = \boxed{<<MLL_i>>\uTmm}
+\end{align*}
+\textbf{Gobierna <<gobierna_carriles>>.}
+{\small Para múltiples carriles se usa $m = 1.00$ (2 carriles cargados, como en clase); con 3 carriles,
+$m = 0.85$ daría un momento menor.}
+
 
 \textbf{Franja de borde} (AASHTO 4.6.2.1.4b): distancia del borde a la cara de la barrera + 0.30 m + $E/4$:
 \begin{equation*}
@@ -290,8 +302,7 @@ E_b = <<barrera>> + 0.30 + \frac{<<E>>}{4} = <<Eb_formula>>\uM \ \le\ \min\!\lef
 \end{equation*}
 
 \subsection*{1.9 Momentos por metro de ancho y combinaciones de carga}
-\textbf{Franja interior:}
-$M_{LL+IM} = \dfrac{<<M_LL_carril>>}{<<E>>} = <<MLL_i>>\uTmm$.
+\textbf{Franja interior:} $M_{LL+IM} = <<MLL_i>>\uTmm$ (mayor entre un carril y múltiples carriles, sección 1.8).
 
 \textbf{Franja de borde:} la barrera ($<<A_barrera>>\ \mathrm{m^2}\times 2.40 = <<w_barrera>>\uTpm$) va en $E_b$; el
 asfalto solo cubre $E_b - <<barrera>> = <<ancho_carril_borde>>\uM$; la carga viva es una línea de ruedas
@@ -344,7 +355,7 @@ A_s = \frac{0.85(<<fc>>)(100)(<<d>>)}{<<fy>>}\left[1-\sqrt{1-<<k_i>>}\right] = <
 s &= \frac{100\,A_b}{A_s} = \frac{100(<<area_bp>>)}{<<Asreq_i>>} = <<s_teo_i>>\uCm
  \ \Rightarrow\ \boxed{\varnothing\,<<bp>> \ @\ <<s_i>>\uCm}\quad (A_s = <<As_i>>\uCmm)\\
 a &= \frac{<<As_i>>(<<fy>>)}{0.85(<<fc>>)(100)} = <<a_i>>\uCm \qquad
-c = \frac{a}{\beta_1} = <<c_i>>\uCm \qquad \frac{c}{d} = <<cd_i>> \le 0.375 \Rightarrow \phi = 0.90 \ok\\
+c = \frac{a}{\beta_1} = <<c_i>>\uCm \qquad \frac{c}{d} = <<cd_i>> \le 0.42 \ok\\
 \phi M_n &= 0.90(<<As_i>>)(<<fy>>)\left(<<d>> - \frac{<<a_i>>}{2}\right) = <<phiMn_i>>\uTmm
  \ \ge\ M_u = <<Mu_i>> \ok\ (D/C = <<DC_Mu_i>>)
 \end{align*}
@@ -355,7 +366,7 @@ c = \frac{a}{\beta_1} = <<c_i>>\uCm \qquad \frac{c}{d} = <<cd_i>> \le 0.375 \Rig
 A_s = \frac{0.85(<<fc>>)(100)(<<d>>)}{<<fy>>}\left[1-\sqrt{1-<<k_b>>}\right] = <<Asreq_b>>\uCmm\\
 s &= \frac{100(<<area_bp>>)}{<<Asreq_b>>} = <<s_teo_b>>\uCm
  \ \Rightarrow\ \boxed{\varnothing\,<<bp>> \ @\ <<s_b>>\uCm}\quad (A_s = <<As_b>>\uCmm)\\
-a &= <<a_b>>\uCm \qquad c = <<c_b>>\uCm \qquad \frac{c}{d} = <<cd_b>> \le 0.375 \ok\\
+a &= <<a_b>>\uCm \qquad c = <<c_b>>\uCm \qquad \frac{c}{d} = <<cd_b>> \le 0.42 \ok\\
 \phi M_n &= 0.90(<<As_b>>)(<<fy>>)\left(<<d>> - \frac{<<a_b>>}{2}\right) = <<phiMn_b>>\uTmm
  \ \ge\ M_u = <<Mu_b>> \ok\ (D/C = <<DC_Mu_b>>)
 \end{align*}
@@ -371,11 +382,17 @@ M_{cr} = \gamma_3\,\gamma_1\,f_r\,S_c = 0.67(1.6)(<<fr>>)\,\frac{100(<<t_cm>>)^2
 Interior: $\min(<<Mcr>>;\ <<Mu133_i>>) = <<Mmin_i>> \le \phi M_n = <<phiMn_i>>$ \ok\qquad
 Borde: $\min(<<Mcr>>;\ <<Mu133_b>>) = <<Mmin_b>> \le <<phiMn_b>>$ \ok
 
+Cuantía mínima (criterio de clase):
+\begin{equation*}
+\rho_{\min} = 0.03\,\frac{f'_c}{f_y} = 0.03\,\frac{<<fc>>}{<<fy>>} = <<rho_min>> \ \Rightarrow\
+A_{s,\min} = <<rho_min>>(100)(<<d>>) = <<As_min_rho>>\uCmm \le <<As_i>> \text{ y } <<As_b>> \ok
+\end{equation*}
+
 \paragraph{b) Fisuración, Servicio I} (AASHTO 5.6.7). Sección fisurada transformada, $n = <<n>>$:
 \begin{align*}
 \frac{b\,y^2}{2} = n A_s (d - y) \qquad j d = d - \frac{y}{3} \qquad
 f_{ss} = \frac{M_s}{A_s\,j d} \le 0.6 f_y = <<fss_max>>\uKg\\
-d_c = r + \frac{d_b}{2} = <<dc>>\uCm \qquad
+d_c = r_e = <<dc>>\uCm \qquad
 \beta_s = 1 + \frac{d_c}{0.7\,(h - d_c)} = <<beta_s>> \qquad
 s \le \frac{123\,000\,\gamma_e}{\beta_s\,f_{ss}} - 2 d_c \ \ [\text{mm, MPa}]
 \end{align*}
@@ -423,12 +440,10 @@ A_{s,\text{dist}} &= <<pct_dist>>\% \times <<As_principal_max>> = <<As_dist_req>
 Se calcula con el mayor $A_s$ colocado (franja de borde) para usar un solo espaciamiento en todo el ancho;
 va transversal, en la cara inferior, sobre el acero principal.
 
-Refuerzo superior por contracción y temperatura ($b$ = ancho del puente y $h$ = espesor, en mm; $f_y$ en MPa):
+Refuerzo superior por temperatura (fórmula de clase, $b = 1000$ mm, $h$ en mm, $f_y$ en MPa):
 \begin{align*}
-A_{s,\text{temp}} &= \frac{0.75\,b\,h}{2(b+h)\,f_y} = \frac{0.75(<<W_mm>>)(<<t_mm>>)}{2(<<W_mm>>+<<t_mm>>)(<<fy_MPa>>)}
- = <<As_temp_mm>>\ \mathrm{mm^2/mm} = <<As_temp_req>>\uCmm \refn{AASHTO 5.10.6}\\
-&0.233 \le <<As_temp_mm>> \le 1.27 \ok \quad\Rightarrow\quad \boxed{\varnothing\,<<bt>>\ @\ <<s_temp>>\uCm}
- \quad(<<As_temp>>\uCmm)
+A_{st} &= \frac{0.75\,b\,h}{f_y} = \frac{0.75(1000)(<<t_mm>>)}{<<fy_MPa>>} = <<As_temp_mm2>>\ \mathrm{mm^2/m} = <<As_temp_req>>\uCmm\\
+ &\Rightarrow\quad \boxed{\varnothing\,<<bt>>\ @\ <<s_temp>>\uCm} \quad(<<As_temp>>\uCmm)
 \end{align*}
 Va en la cara superior, en ambas direcciones.
 

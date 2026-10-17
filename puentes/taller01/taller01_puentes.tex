@@ -195,11 +195,12 @@ E_c &= 15\,344\sqrt{f'_c} = 15\,344\sqrt{420} = 314\,460\uKg
  \refn{AASHTO 5.4.2.4, $w_c = 2320$ kg/m$^3$}\\
 E_s &= 200\,000\ \text{MPa} = 2\,039\,432\uKg \qquad
 n = \frac{E_s}{E_c} = 6.49 \refn{AASHTO 5.4.3.2}\\
-\beta_1 &= 0.85 - 0.05\,\frac{f'_c-280}{70} = 0.85 - 0.05\,\frac{420-280}{70} = 0.750
+\beta_1 &= 0.85 - 0.05\,\frac{f'_c-28}{7} = 0.85 - 0.05\,\frac{41.19-28}{7} = 0.756
+ \quad(f'_c \text{ en MPa})
  \refn{AASHTO 5.6.2.2}\\
 f_r &= 0.63\sqrt{f'_c\,[\text{MPa}]} = 0.63\sqrt{41.19}\ \text{MPa} = 41.23\uKg \refn{AASHTO 5.4.2.6}\\
-d &= t - r - \frac{d_b}{2} = 40 - 2.5 - \frac{2.54}{2} = 36.23\uCm
- \quad(\text{barra } \varnothing\,1'',\ r = 2.5\uCm) \refn{AASHTO Tabla 5.10.1-1}
+d &= t - r_e = 40 - 4.5 = 35.50\uCm
+ \quad(r_e = 4.5\uCm \text{ del fondo al eje de la barra}) \refn{criterio de clase}
 \end{align*}
 
 \subsection*{1.5 Modificador de cargas}
@@ -302,17 +303,28 @@ M_{LL+IM} &= (1+IM)\,M_{\text{tándem}} + M_{\text{carril}} = 1.33 \times 28.095
 \end{align*}
 
 \subsection*{1.8 Ancho de franja equivalente}
-Con $L_1 = \min(L;\ 18\,000) = 6\,096\uMm$ y el ancho total $W = 11\,600\uMm$ (AASHTO 4.6.2.3):
+Fórmulas de clase (AASHTO 4.6.2.3, en metros), con $L_1 = \min(L;\ 18.26) = 6.096\uM$ y el ancho total
+$W = 11.60\uM$:
 \begin{align*}
-\intertext{Un carril cargado, $W_1 = \min(W;\ 9\,000) = 9\,000\uMm$:}
-E_1 &= 250 + 0.42\sqrt{L_1 W_1} = 250 + 0.42\sqrt{6\,096\times9\,000} = 250 + 0.42\,(7\,407.0) = 3\,360.9\uMm
-\intertext{Dos o más carriles cargados, $W_1 = \min(W;\ 18\,000) = 11\,600\uMm$:}
-E_m &= 2100 + 0.12\sqrt{L_1 W_1} = 2100 + 0.12\sqrt{6\,096\times11\,600} = 2100 + 0.12\,(8\,409.1)
- = 3\,109.1\uMm\\
- &\le \frac{W}{N_L} = \frac{11\,600}{3} = 3\,866.7\uMm \quad\Rightarrow\quad E_m = 3.109\uM\\
-E &= \min(E_1;\ E_m) = \min(3.361;\ 3.109) = \boxed{3.109\uM}
+\intertext{\textbf{Un solo carril cargado}, $W_1 = \min(W;\ 9.14) = 9.14\uM$:}
+E_1 &= 0.25 + 0.42\sqrt{L_1 W_1} = 0.25 + 0.42\sqrt{6.096\times9.14} = 0.25 + 0.42\,(7.4644) = \boxed{3.385\uM}
+\intertext{\textbf{Múltiples carriles cargados}, $W_1 = \min(W;\ 18) = 11.60\uM$:}
+E_m &= 2.10 + 0.12\sqrt{L_1 W_1} = 2.10 + 0.12\sqrt{6.096\times11.60} = 2.10 + 0.12\,(8.4091)
+ = 3.109\uM\\
+ &\le \frac{W}{N_L} = \frac{11.60}{3} = 3.867\uM \quad\Rightarrow\quad E_m = \boxed{3.109\uM}
 \end{align*}
-Estos anchos ya incluyen el factor de presencia múltiple, así que no se vuelve a aplicar.
+
+\textbf{Momento de sobrecarga por metro} (fórmula de clase $M_{LL} = m\,M_{SC\text{-}V}/E \times b$, con $b = 1$ m y
+$m$ de la Tabla 3.6.1.1.2-1): se calcula con un carril y con varios carriles, y se toma el mayor.
+\begin{align*}
+\text{Un carril } (m = 1.20):\quad M_{LL+IM} &= \frac{1.20 \times 41.789}{3.385} = 14.814\uTmm\\
+\text{Múltiples carriles } (m = 1.00):\quad M_{LL+IM} &= \frac{1.00 \times 41.789}{3.109} = 13.441\uTmm\\
+\Rightarrow\quad M_{LL+IM} &= \max(14.814;\ 13.441) = \boxed{14.814\uTmm}
+\end{align*}
+\textbf{Gobierna un carril.}
+{\small Para múltiples carriles se usa $m = 1.00$ (2 carriles cargados, como en clase); con 3 carriles,
+$m = 0.85$ daría un momento menor.}
+
 
 \textbf{Franja de borde} (AASHTO 4.6.2.1.4b): distancia del borde a la cara de la barrera + 0.30 m + $E/4$:
 \begin{equation*}
@@ -321,8 +333,7 @@ E_b = 0.40 + 0.30 + \frac{3.109}{4} = 1.477\uM \ \le\ \min\!\left(\frac{E}{2} = 
 \end{equation*}
 
 \subsection*{1.9 Momentos por metro de ancho y combinaciones de carga}
-\textbf{Franja interior:}
-$M_{LL+IM} = \dfrac{41.789}{3.109} = 13.441\uTmm$.
+\textbf{Franja interior:} $M_{LL+IM} = 14.814\uTmm$ (mayor entre un carril y múltiples carriles, sección 1.8).
 
 \textbf{Franja de borde:} la barrera ($0.2028\ \mathrm{m^2}\times 2.40 = 0.487\uTpm$) va en $E_b$; el
 asfalto solo cubre $E_b - 0.40 = 1.077\uM$; la carga viva es una línea de ruedas
@@ -342,8 +353,8 @@ M_{LL+IM} &= \frac{m\left[\,0.5\,(1.33)\,M_{\text{tándem}} + M_{\text{carril}}\
 \end{align*}
 Reemplazando los momentos de cada franja:
 \begin{align*}
-M_u^{\text{int}} &= 1.05\,\big[1.25(4.459) + 1.50(0.796) + 1.75(13.441)\big] = 1.05\,(30.290)
- = \boxed{31.805\uTmm}\\
+M_u^{\text{int}} &= 1.05\,\big[1.25(4.459) + 1.50(0.796) + 1.75(14.814)\big] = 1.05\,(32.693)
+ = \boxed{34.328\uTmm}\\
 M_u^{\text{borde}} &= 1.05\,\big[1.25(5.990) + 1.50(0.581) + 1.75(16.466)\big] = 1.05\,(37.175)
  = \boxed{39.033\uTmm}
 \end{align*}
@@ -354,41 +365,41 @@ M_u^{\text{borde}} &= 1.05\,\big[1.25(5.990) + 1.50(0.581) + 1.75(16.466)\big] =
 Franja & Ancho (m) & $M_{DC}$ & $M_{DW}$ & $M_{LL+IM}$ & $M_u$ (Resist. I) & $M_s$ (Serv. I) \\
  & & \multicolumn{5}{c}{(t$\cdot$m/m)}\\
 \midrule
-Interior & 1.000 & 4.459 & 0.796 & 13.441 & \textbf{31.805} & 18.697\\
+Interior & 1.000 & 4.459 & 0.796 & 14.814 & \textbf{34.328} & 20.070\\
 Borde & 1.477 & 5.990 & 0.581 & 16.466 & \textbf{39.033} & 23.037\\
 \bottomrule
 \end{tabular}
 \end{center}
 
 \subsection*{1.10 Diseño por flexión (Resistencia I)}
-Sección rectangular $b = 100\uCm$, $d = 36.23\uCm$, $\phi = 0.90$:
+Sección rectangular $b = 100\uCm$, $d = 35.50\uCm$, $\phi = 0.90$:
 \begin{equation*}
 A_s = \frac{0.85\,f'_c\,b\,d}{f_y}\left[1 - \sqrt{1 - \frac{2\,M_u}{\phi\,0.85\,f'_c\,b\,d^{2}}}\,\right]
 \qquad a = \frac{A_s f_y}{0.85\,f'_c\,b} \qquad \phi M_n = \phi A_s f_y\left(d - \frac{a}{2}\right)
 \refn{AASHTO 5.6.3.2}
 \end{equation*}
 
-\textbf{Franja interior} ($M_u = 3\,180\,471$ kg$\cdot$cm):
+\textbf{Franja interior} ($M_u = 3\,432\,814$ kg$\cdot$cm):
 \begin{align*}
-\frac{2M_u}{\phi\,0.85 f'_c b d^2} &= 0.1508 \quad\Rightarrow\quad
-A_s = \frac{0.85(420)(100)(36.23)}{4\,200}\left[1-\sqrt{1-0.1508}\right] = 24.17\uCmm\\
-s &= \frac{100\,A_b}{A_s} = \frac{100(5.10)}{24.17} = 21.1\uCm
- \ \Rightarrow\ \boxed{\varnothing\,1'' \ @\ 20.0\uCm}\quad (A_s = 25.50\uCmm)\\
-a &= \frac{25.50(4\,200)}{0.85(420)(100)} = 3.00\uCm \qquad
-c = \frac{a}{\beta_1} = 4.00\uCm \qquad \frac{c}{d} = 0.110 \le 0.375 \Rightarrow \phi = 0.90 \ok\\
-\phi M_n &= 0.90(25.50)(4\,200)\left(36.23 - \frac{3.00}{2}\right) = 33.476\uTmm
- \ \ge\ M_u = 31.805 \ok\ (D/C = 0.95)
+\frac{2M_u}{\phi\,0.85 f'_c b d^2} &= 0.1696 \quad\Rightarrow\quad
+A_s = \frac{0.85(420)(100)(35.50)}{4\,200}\left[1-\sqrt{1-0.1696}\right] = 26.77\uCmm\\
+s &= \frac{100\,A_b}{A_s} = \frac{100(5.10)}{26.77} = 19.1\uCm
+ \ \Rightarrow\ \boxed{\varnothing\,1'' \ @\ 17.5\uCm}\quad (A_s = 29.14\uCmm)\\
+a &= \frac{29.14(4\,200)}{0.85(420)(100)} = 3.43\uCm \qquad
+c = \frac{a}{\beta_1} = 4.54\uCm \qquad \frac{c}{d} = 0.128 \le 0.42 \ok\\
+\phi M_n &= 0.90(29.14)(4\,200)\left(35.50 - \frac{3.43}{2}\right) = 37.218\uTmm
+ \ \ge\ M_u = 34.328 \ok\ (D/C = 0.92)
 \end{align*}
 
 \textbf{Franja de borde} ($M_u = 3\,903\,346$ kg$\cdot$cm):
 \begin{align*}
-\frac{2M_u}{\phi\,0.85 f'_c b d^2} &= 0.1851 \quad\Rightarrow\quad
-A_s = \frac{0.85(420)(100)(36.23)}{4\,200}\left[1-\sqrt{1-0.1851}\right] = 29.96\uCmm\\
-s &= \frac{100(5.10)}{29.96} = 17.0\uCm
+\frac{2M_u}{\phi\,0.85 f'_c b d^2} &= 0.1928 \quad\Rightarrow\quad
+A_s = \frac{0.85(420)(100)(35.50)}{4\,200}\left[1-\sqrt{1-0.1928}\right] = 30.64\uCmm\\
+s &= \frac{100(5.10)}{30.64} = 16.6\uCm
  \ \Rightarrow\ \boxed{\varnothing\,1'' \ @\ 15.0\uCm}\quad (A_s = 34.00\uCmm)\\
-a &= 4.00\uCm \qquad c = 5.33\uCm \qquad \frac{c}{d} = 0.147 \le 0.375 \ok\\
-\phi M_n &= 0.90(34.00)(4\,200)\left(36.23 - \frac{4.00}{2}\right) = 43.992\uTmm
- \ \ge\ M_u = 39.033 \ok\ (D/C = 0.89)
+a &= 4.00\uCm \qquad c = 5.29\uCm \qquad \frac{c}{d} = 0.149 \le 0.42 \ok\\
+\phi M_n &= 0.90(34.00)(4\,200)\left(35.50 - \frac{4.00}{2}\right) = 43.054\uTmm
+ \ \ge\ M_u = 39.033 \ok\ (D/C = 0.91)
 \end{align*}
 
 \subsection*{1.11 Verificaciones}
@@ -399,15 +410,21 @@ $\gamma_1 = 1.6$ y $\gamma_3 = 0.67$ (A615 Gr 60).
 M_{cr} = \gamma_3\,\gamma_1\,f_r\,S_c = 0.67(1.6)(41.23)\,\frac{100(40)^2}{6}
  = 0.67(1.6)(41.23)(26\,667) = 11.786\uTmm
 \end{align*}
-Interior: $\min(11.786;\ 42.300) = 11.786 \le \phi M_n = 33.476$ \ok\qquad
-Borde: $\min(11.786;\ 51.915) = 11.786 \le 43.992$ \ok
+Interior: $\min(11.786;\ 45.656) = 11.786 \le \phi M_n = 37.218$ \ok\qquad
+Borde: $\min(11.786;\ 51.915) = 11.786 \le 43.054$ \ok
+
+Cuantía mínima (criterio de clase):
+\begin{equation*}
+\rho_{\min} = 0.03\,\frac{f'_c}{f_y} = 0.03\,\frac{420}{4\,200} = 0.0030 \ \Rightarrow\
+A_{s,\min} = 0.0030(100)(35.50) = 10.65\uCmm \le 29.14 \text{ y } 34.00 \ok
+\end{equation*}
 
 \paragraph{b) Fisuración, Servicio I} (AASHTO 5.6.7). Sección fisurada transformada, $n = 6.49$:
 \begin{align*}
 \frac{b\,y^2}{2} = n A_s (d - y) \qquad j d = d - \frac{y}{3} \qquad
 f_{ss} = \frac{M_s}{A_s\,j d} \le 0.6 f_y = 2\,520\uKg\\
-d_c = r + \frac{d_b}{2} = 3.77\uCm \qquad
-\beta_s = 1 + \frac{d_c}{0.7\,(h - d_c)} = 1.1487 \qquad
+d_c = r_e = 4.50\uCm \qquad
+\beta_s = 1 + \frac{d_c}{0.7\,(h - d_c)} = 1.1811 \qquad
 s \le \frac{123\,000\,\gamma_e}{\beta_s\,f_{ss}} - 2 d_c \ \ [\text{mm, MPa}]
 \end{align*}
 Se usa $\gamma_e = 0.75$ (exposición clase 2, por la humedad del río; con clase 1, $\gamma_e = 1.00$,
@@ -417,28 +434,28 @@ cumple con más holgura).
 \toprule
 Franja & $A_s$ (cm$^2$/m) & $nA_s$ (cm$^2$) & $y$ (cm) & $jd$ (cm) & $M_s$ (t$\cdot$m/m) & $f_{ss}$ (kg/cm$^2$) & $s_{\max}$ (cm) & $s$ (cm)\\
 \midrule
-Interior & 25.50 & 165.38 & 9.42 & 33.09 & 18.697 & 2\,215.7 & 29.4 & 20.0 \ok\\
-Borde & 34.00 & 220.51 & 10.63 & 32.69 & 23.037 & 2\,072.8 & 32.0 & 15.0 \ok\\
+Interior & 29.14 & 189.01 & 9.85 & 32.22 & 20.070 & 2\,137.6 & 28.3 & 17.5 \ok\\
+Borde & 34.00 & 220.51 & 10.50 & 32.00 & 23.037 & 2\,117.4 & 28.6 & 15.0 \ok\\
 \bottomrule
 \end{tabular}
 \end{center}
-Ejemplo (interior): $f_{ss} = 2\,215.7\uKg = 217.3$ MPa,
-$s_{\max} = \dfrac{123\,000(0.75)}{1.1487(217.3)} - 2(37.7)\ \text{mm} = 29.4\uCm$.
+Ejemplo (interior): $f_{ss} = 2\,137.6\uKg = 209.6$ MPa,
+$s_{\max} = \dfrac{123\,000(0.75)}{1.1811(209.6)} - 2(45.0)\ \text{mm} = 28.3\uCm$.
 
 \paragraph{c) Fatiga I} (AASHTO 3.6.1.4 y 5.5.3). Un camión con $d_{1-2} = 3.00\uM$ y 9.00 m entre ejes
 traseros, $IM = 15\%$, franja de un carril $E_1$ y sin presencia múltiple (se divide entre 1.20,
 AASHTO 3.6.1.1.2). Con 9.00 m solo entran los ejes 1 y 2: $M = 22.484\uTm$ por carril.
 \begin{align*}
-M_{fat} &= \frac{(1+0.15)\,M}{1.20\,E_1} = \frac{1.15(22.484)}{1.20(3.361)} = 6.411\uTmm \qquad
+M_{fat} &= \frac{(1+0.15)\,M}{1.20\,E_1} = \frac{1.15(22.484)}{1.20(3.385)} = 6.365\uTmm \qquad
 \Delta f = \frac{\gamma\,M_{fat}}{A_s\,j d},\ \ \gamma = 1.50\\
 f_{\min} &= \frac{M_{DC} + M_{DW}}{A_s\,j d} \qquad
 \Delta F_{TH} = 24 - 0.33 f_{\min}\ [\text{ksi}] = 1687 - 0.33 f_{\min}\ [\text{kg/cm}^2]
 \end{align*}
-Interior: $f_{\min} = 622.9$, $\Delta f = 1\,139.6 \le \Delta F_{TH} = 1\,481.8\uKg$ \ok\qquad
-Borde: $f_{\min} = 591.2$, $\Delta f = 865.3 \le 1\,492.3\uKg$ \ok
+Interior: $f_{\min} = 559.8$, $\Delta f = 1\,016.9 \le \Delta F_{TH} = 1\,502.6\uKg$ \ok\qquad
+Borde: $f_{\min} = 603.9$, $\Delta f = 877.6 \le 1\,488.1\uKg$ \ok
 
 {\small Con la 9.ª edición de AASHTO ($\gamma = 1.75$ y $\Delta F_{TH} = 26 - 22 f_{\min}/f_y$ ksi) también cumple:
-interior $1\,329.6 \le 1\,598.6$; borde $1\,009.5 \le 1\,610.3\uKg$.}
+interior $1\,186.4 \le 1\,621.8$; borde $1\,023.8 \le 1\,605.6\uKg$.}
 
 \paragraph{d) Cortante.} Las losas diseñadas por flexión con el método de franjas de AASHTO 4.6.2.3 se consideran
 satisfactorias por corte (AASHTO 5.12.2.1), así que no se diseña refuerzo transversal por corte.
@@ -454,12 +471,10 @@ A_{s,\text{dist}} &= 22.41\% \times 34.00 = 7.62\uCmm
 Se calcula con el mayor $A_s$ colocado (franja de borde) para usar un solo espaciamiento en todo el ancho;
 va transversal, en la cara inferior, sobre el acero principal.
 
-Refuerzo superior por contracción y temperatura ($b$ = ancho del puente y $h$ = espesor, en mm; $f_y$ en MPa):
+Refuerzo superior por temperatura (fórmula de clase, $b = 1000$ mm, $h$ en mm, $f_y$ en MPa):
 \begin{align*}
-A_{s,\text{temp}} &= \frac{0.75\,b\,h}{2(b+h)\,f_y} = \frac{0.75(11\,600)(400)}{2(11\,600+400)(411.9)}
- = 0.352\ \mathrm{mm^2/mm} = 3.52\uCmm \refn{AASHTO 5.10.6}\\
-&0.233 \le 0.352 \le 1.27 \ok \quad\Rightarrow\quad \boxed{\varnothing\,3/8''\ @\ 20.0\uCm}
- \quad(3.55\uCmm)
+A_{st} &= \frac{0.75\,b\,h}{f_y} = \frac{0.75(1000)(400)}{411.9} = 728.4\ \mathrm{mm^2/m} = 7.28\uCmm\\
+ &\Rightarrow\quad \boxed{\varnothing\,1/2''\ @\ 17.5\uCm} \quad(7.37\uCmm)
 \end{align*}
 Va en la cara superior, en ambas direcciones.
 
@@ -476,10 +491,10 @@ El NAME sale del estudio hidrológico; con él se fija la altura de los estribos
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}lX@{}}
 Vía & Autopista de Segunda Clase; dos puentes gemelos de $W = 11.60$ m, $N_L = 3$\\
 Superestructura & losa maciza simplemente apoyada, $L = 6.096$ m, $t = 0.40$ m, $f'_c = 420\uKg$\\
-Momentos de diseño & $M_u = 31.805$ t$\cdot$m/m (interior) \quad $M_u = 39.033$ t$\cdot$m/m (borde)\\
-Acero principal inferior & $\varnothing\,1''\ @\ 20.0$ cm (interior) \quad $\varnothing\,1''\ @\ 15.0$ cm (franjas de borde de 1.477 m)\\
+Momentos de diseño & $M_u = 34.328$ t$\cdot$m/m (interior) \quad $M_u = 39.033$ t$\cdot$m/m (borde)\\
+Acero principal inferior & $\varnothing\,1''\ @\ 17.5$ cm (interior) \quad $\varnothing\,1''\ @\ 15.0$ cm (franjas de borde de 1.477 m)\\
 Distribución inferior & $\varnothing\,5/8''\ @\ 25.0$ cm, transversal\\
-Temperatura superior & $\varnothing\,3/8''\ @\ 20.0$ cm, en ambas direcciones\\
+Temperatura superior & $\varnothing\,1/2''\ @\ 17.5$ cm, en ambas direcciones\\
 Rasante & $\ge$ NAME + 2.976 m
 \end{tabularx}
 \end{resultado}
@@ -490,20 +505,22 @@ Rasante & $\ge$ NAME + 2.976 m
 \toprule
 Verificación & Demanda & Capacidad & Unidad & D/C & Estado\\
 \midrule
-Resistencia I, $M_u \le \phi M_n$ (franja interior) & 31.80 & 33.48 & t$\cdot$m/m & 0.95 & \textcolor{ok}{\textbf{CUMPLE}} \\
-Ductilidad $c/d \le 0.375$ (franja interior) & 0.110 & 0.375 &  & 0.29 & \textcolor{ok}{\textbf{CUMPLE}} \\
-Acero mínimo $\min(M_{cr};\,1.33M_u) \le \phi M_n$ (franja interior) & 11.79 & 33.48 & t$\cdot$m/m & 0.35 & \textcolor{ok}{\textbf{CUMPLE}} \\
-Servicio I, $f_{ss} \le 0.6 f_y$ (franja interior) & 2\,215.71 & 2\,520.00 & kg/cm$^2$ & 0.88 & \textcolor{ok}{\textbf{CUMPLE}} \\
-Fisuración, $s \le s_{\max}$ (franja interior) & 20.00 & 29.42 & cm & 0.68 & \textcolor{ok}{\textbf{CUMPLE}} \\
-Fatiga I, $\Delta f \le \Delta F_{TH}$ (franja interior) & 1\,139.63 & 1\,481.82 & kg/cm$^2$ & 0.77 & \textcolor{ok}{\textbf{CUMPLE}} \\
-Resistencia I, $M_u \le \phi M_n$ (franja borde) & 39.03 & 43.99 & t$\cdot$m/m & 0.89 & \textcolor{ok}{\textbf{CUMPLE}} \\
-Ductilidad $c/d \le 0.375$ (franja borde) & 0.147 & 0.375 &  & 0.39 & \textcolor{ok}{\textbf{CUMPLE}} \\
-Acero mínimo $\min(M_{cr};\,1.33M_u) \le \phi M_n$ (franja borde) & 11.79 & 43.99 & t$\cdot$m/m & 0.27 & \textcolor{ok}{\textbf{CUMPLE}} \\
-Servicio I, $f_{ss} \le 0.6 f_y$ (franja borde) & 2\,072.81 & 2\,520.00 & kg/cm$^2$ & 0.82 & \textcolor{ok}{\textbf{CUMPLE}} \\
-Fisuración, $s \le s_{\max}$ (franja borde) & 15.00 & 31.97 & cm & 0.47 & \textcolor{ok}{\textbf{CUMPLE}} \\
-Fatiga I, $\Delta f \le \Delta F_{TH}$ (franja borde) & 865.26 & 1\,492.27 & kg/cm$^2$ & 0.58 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Resistencia I, $M_u \le \phi M_n$ (franja interior) & 34.33 & 37.22 & t$\cdot$m/m & 0.92 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Ductilidad $c/d \le 0.42$ (franja interior) & 0.128 & 0.420 &  & 0.30 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Acero mínimo $\min(M_{cr};\,1.33M_u) \le \phi M_n$ (franja interior) & 11.79 & 37.22 & t$\cdot$m/m & 0.32 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Cuantía mínima $\rho \ge 0.03\,f'_c/f_y$ (franja interior) & 10.65 & 29.14 & cm$^2$/m & 0.37 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Servicio I, $f_{ss} \le 0.6 f_y$ (franja interior) & 2\,137.57 & 2\,520.00 & kg/cm$^2$ & 0.85 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Fisuración, $s \le s_{\max}$ (franja interior) & 17.50 & 28.26 & cm & 0.62 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Fatiga I, $\Delta f \le \Delta F_{TH}$ (franja interior) & 1\,016.91 & 1\,502.64 & kg/cm$^2$ & 0.68 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Resistencia I, $M_u \le \phi M_n$ (franja borde) & 39.03 & 43.05 & t$\cdot$m/m & 0.91 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Ductilidad $c/d \le 0.42$ (franja borde) & 0.149 & 0.420 &  & 0.35 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Acero mínimo $\min(M_{cr};\,1.33M_u) \le \phi M_n$ (franja borde) & 11.79 & 43.05 & t$\cdot$m/m & 0.27 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Cuantía mínima $\rho \ge 0.03\,f'_c/f_y$ (franja borde) & 10.65 & 34.00 & cm$^2$/m & 0.31 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Servicio I, $f_{ss} \le 0.6 f_y$ (franja borde) & 2\,117.38 & 2\,520.00 & kg/cm$^2$ & 0.84 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Fisuración, $s \le s_{\max}$ (franja borde) & 15.00 & 28.62 & cm & 0.52 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Fatiga I, $\Delta f \le \Delta F_{TH}$ (franja borde) & 877.57 & 1\,488.08 & kg/cm$^2$ & 0.59 & \textcolor{ok}{\textbf{CUMPLE}} \\
 Acero de distribución & 7.62 & 8.00 & cm$^2$/m & 0.95 & \textcolor{ok}{\textbf{CUMPLE}} \\
-Acero de temperatura (cara superior) & 3.52 & 3.55 & cm$^2$/m & 0.99 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Acero de temperatura (cara superior) & 7.28 & 7.37 & cm$^2$/m & 0.99 & \textcolor{ok}{\textbf{CUMPLE}} \\
 \bottomrule
 \end{tabular}
 \end{center}

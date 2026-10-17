@@ -47,6 +47,7 @@ ANCHO_CARRIL_DISENO = 3.60  # m (AASHTO 3.6.1.1.1)
 IM = 0.33  # AASHTO Tabla 3.6.2.1-1, demás estados límite
 IM_FATIGA = 0.15  # AASHTO Tabla 3.6.2.1-1
 M_UN_CARRIL = 1.20  # factor de presencia múltiple, 1 carril (AASHTO Tabla 3.6.1.1.2-1)
+M_MULTIPLES = 1.00  # 2 carriles cargados, criterio de clase (M_LL = m·M/E)
 
 # Factores de carga (AASHTO Tablas 3.4.1-1 y 3.4.1-2)
 GAMMA_DC = 1.25
@@ -57,7 +58,8 @@ GAMMA_FATIGA = 1.50
 GAMMA_FATIGA_9ED = 1.75
 
 PHI_FLEXION = 0.90  # sección controlada por tracción (AASHTO 5.5.4.2)
-C_D_MAX = 0.375  # c/d para εt >= 0.005 (AASHTO 5.6.2.1)
+C_D_MAX = 0.42  # c/d máximo, criterio de clase (AASHTO 2014+ pide 0.375 para φ = 0.90)
+RHO_MIN_COEF = 0.03  # ρmin >= 0.03 f'c/fy, criterio de clase
 GAMMA_1_FISURACION = 1.6  # variabilidad de fr (AASHTO 5.6.3.3)
 GAMMA_3_ACERO = 0.67  # A615 Gr 60 (AASHTO 5.6.3.3)
 FSS_MAX = 0.60  # fss <= 0.6 fy (AASHTO 5.6.7)
@@ -254,17 +256,15 @@ def numero_carriles(ancho_libre: float) -> int:
 
 
 def E_un_carril(L: float, W: float) -> float:
-    """Ancho de franja [m], un carril: 250 + 0.42 √(L1·W1) mm (AASHTO 4.6.2.3-1)."""
-    L1 = min(L * 1000, 18_000)
-    W1 = min(W * 1000, 9_000)
-    return (250 + 0.42 * math.sqrt(L1 * W1)) / 1000
+    """Ancho de franja [m], un carril: 0.25 + 0.42 √(L1·W1), L1 = min(L, 18.26), W1 = min(W, 9.14)
+    (AASHTO 4.6.2.3-1 en m, como en clase)."""
+    return 0.25 + 0.42 * math.sqrt(min(L, 18.26) * min(W, 9.14))
 
 
 def E_multiples_carriles(L: float, W: float, NL: int) -> float:
-    """Ancho de franja [m], 2+ carriles: 2100 + 0.12 √(L1·W1) <= W/NL mm (AASHTO 4.6.2.3-2)."""
-    L1 = min(L * 1000, 18_000)
-    W1 = min(W * 1000, 18_000)
-    return min(2100 + 0.12 * math.sqrt(L1 * W1), W * 1000 / NL) / 1000
+    """Ancho de franja [m], 2+ carriles: 2.10 + 0.12 √(L1·W1) <= W/NL, L1 = min(L, 18.26),
+    W1 = min(W, 18) (AASHTO 4.6.2.3-2 en m, como en clase)."""
+    return min(2.10 + 0.12 * math.sqrt(min(L, 18.26) * min(W, 18.0)), W / NL)
 
 
 def E_borde(dist_cara_barrera: float, E: float) -> float:
@@ -274,8 +274,9 @@ def E_borde(dist_cara_barrera: float, E: float) -> float:
 
 # --- Concreto armado (AASHTO, en kgf y cm) ---------------------------------
 def beta_1(f_c: float) -> float:
-    """β1 (AASHTO 5.6.2.2): 0.85 hasta 280 kgf/cm², -0.05 cada 70 kgf/cm², >= 0.65."""
-    return min(0.85, max(0.65, 0.85 - 0.05 * (f_c - 280) / 70))
+    """β1 (AASHTO 5.6.2.2): 0.85 - 0.05 (f'c - 28)/7 con f'c en MPa, 0.65 <= β1 <= 0.85."""
+    f_MPa = f_c * KGF_CM2_A_MPA
+    return min(0.85, max(0.65, 0.85 - 0.05 * (f_MPa - 28) / 7))
 
 
 def Ec(f_c: float) -> float:
@@ -359,14 +360,10 @@ def porcentaje_distribucion(L: float) -> float:
     return min(1750 / math.sqrt(L * 1000), 50.0)
 
 
-def As_temperatura(b: float, h: float, fy: float) -> float:
-    """Acero por contracción y temperatura [cm²/m] por cara (AASHTO 5.10.6).
-
-    As = 0.75 b h / (2 (b + h) fy) mm²/mm, b y h en mm, fy en MPa;
-    0.233 <= As <= 1.27 mm²/mm. Entradas: b y h en m, fy en kgf/cm².
-    """
-    As = 0.75 * (b * 1000) * (h * 1000) / (2 * (b + h) * 1000 * fy * KGF_CM2_A_MPA)
-    return min(max(As, 0.233), 1.27) * 10  # mm²/mm -> cm²/m
+def As_temperatura(h: float, fy: float) -> float:
+    """Acero por temperatura [cm²/m]: Ast = 0.75 b h / fy, b = 1000 mm, h en mm, fy en MPa
+    (fórmula de clase). Entradas: h en m, fy en kgf/cm²."""
+    return 0.75 * 1000 * (h * 1000) / (fy * KGF_CM2_A_MPA) / 100  # mm²/m -> cm²/m
 
 
 def espaciamiento(As_req: float, designacion: str, s_max: float) -> float:
@@ -399,7 +396,7 @@ class DatosPuente:
     area_barrera: float  # m²
     # Diseño
     t: float  # m, espesor adoptado
-    recubrimiento: float  # cm, inferior
+    recubrimiento: float  # cm, del fondo al eje de las barras (re)
     barra_principal: str
     barra_distribucion: str
     barra_temperatura: str
@@ -420,8 +417,8 @@ class DatosPuente:
 
     @property
     def d(self) -> float:
-        """Peralte efectivo [cm] con una capa de barra_principal."""
-        return self.t * 100 - self.recubrimiento - barra(self.barra_principal).diametro / 2
+        """Peralte efectivo [cm]: d = t - re."""
+        return self.t * 100 - self.recubrimiento
 
     @property
     def eta(self) -> float:
@@ -446,10 +443,10 @@ TALLER_AL = DatosPuente(
     berma_exterior=2.60,  # VERIFICAR con DG-2018 Tabla 304.02 y el criterio del curso
     area_barrera=0.2028,  # barrera New Jersey TL-4, VERIFICAR con el plano de detalle
     t=0.40,
-    recubrimiento=2.5,  # fondo de losas vaciadas in situ (AASHTO Tabla 5.10.1-1)
+    recubrimiento=4.5,  # re al eje de la barra, criterio de clase
     barra_principal='1"',
     barra_distribucion='5/8"',
-    barra_temperatura='3/8"',
+    barra_temperatura='1/2"',
     eta_D=1.00,  # diseño convencional (AASHTO 1.3.3)
     eta_R=1.00,  # redundancia convencional (AASHTO 1.3.4)
     eta_I=1.05,  # puente importante (AASHTO 1.3.5)
@@ -517,12 +514,16 @@ def calcular(p: DatosPuente) -> dict:
     r["Em_sin_limite"] = (2100 + 0.12 * math.sqrt(min(L * 1000, 18_000) * min(p.W * 1000, 18_000))) / 1000
     r["E"] = min(r["E1"], r["Em"])
     r["Eb"] = E_borde(p.ancho_barrera, r["E"])
+    # Momento por metro: M = m·M_LL+IM/E con un carril y con varios; se toma el mayor
+    r["M_1carril"] = M_UN_CARRIL * r["M_LL_carril"] / r["E1"]
+    r["M_multi"] = M_MULTIPLES * r["M_LL_carril"] / r["Em"]
+    r["gobierna_carriles"] = "un carril" if r["M_1carril"] >= r["M_multi"] else "múltiples carriles"
 
     eta = p.eta
     franjas = []
     # Franja interior
     M_DC, M_DW = w_DC * L2_8, w_DW * L2_8
-    M_LL = r["M_LL_carril"] / r["E"]
+    M_LL = max(r["M_1carril"], r["M_multi"])
     franjas.append(("Interior", 1.0, w_DC, w_DW, M_DC, M_DW, M_LL))
     # Franja de borde: barrera, asfalto fuera de la barrera, una línea de ruedas y su parte del carril
     Eb = r["Eb"]
@@ -544,7 +545,7 @@ def calcular(p: DatosPuente) -> dict:
         r["franjas"].append(Franja(nombre, ancho, wdc, wdw, mdc, mdw, mll, M_u, M_s, As_req, s, As))
 
     # Verificaciones por franja
-    dc = p.recubrimiento + barra(p.barra_principal).diametro / 2
+    dc = p.recubrimiento
     r["dc"], r["beta_s"] = dc, beta_s(dc, h)
     r["Mcr"] = Mcr(p.f_c, b, h) / TONF_M_A_KGF_CM
 
@@ -575,13 +576,20 @@ def calcular(p: DatosPuente) -> dict:
         tag = f"franja {f.nombre.lower()}"
         verificaciones += [
             Verificacion(f"Resistencia I, M_u <= φMn ({tag})", f.M_u, dd["phi_Mn"], "tonf·m/m", "AASHTO 5.6.3.2"),
-            Verificacion(f"Ductilidad c/d <= 0.375 ({tag})", dd["c"] / d, C_D_MAX, "", "AASHTO 5.6.2.1", 3),
+            Verificacion(f"Ductilidad c/d <= 0.42 ({tag})", dd["c"] / d, C_D_MAX, "", "Criterio de clase", 3),
             Verificacion(
                 f"Acero mínimo min(Mcr, 1.33M_u) <= φMn ({tag})",
                 min(r["Mcr"], 1.33 * f.M_u),
                 dd["phi_Mn"],
                 "tonf·m/m",
                 "AASHTO 5.6.3.3",
+            ),
+            Verificacion(
+                f"Cuantía mínima ρ >= 0.03 f'c/fy ({tag})",
+                RHO_MIN_COEF * p.f_c / p.fy * b * d,
+                f.As,
+                "cm²/m",
+                "Criterio de clase",
             ),
             Verificacion(f"Servicio I, fss <= 0.6 fy ({tag})", dd["fss"], FSS_MAX * p.fy, "kgf/cm²", "AASHTO 5.6.7"),
             Verificacion(f"Fisuración, s <= s_max ({tag})", f.s, dd["s_max"], "cm", "AASHTO 5.6.7"),
@@ -594,12 +602,12 @@ def calcular(p: DatosPuente) -> dict:
     r["As_dist_req"] = r["pct_dist"] / 100 * As_principal_max
     r["s_dist"] = espaciamiento(r["As_dist_req"], p.barra_distribucion, ESPACIAMIENTO_MAX_PRINCIPAL)
     r["As_dist"] = barra(p.barra_distribucion).area * 100 / r["s_dist"]
-    r["As_temp_req"] = As_temperatura(p.W, p.t, p.fy)
+    r["As_temp_req"] = As_temperatura(p.t, p.fy)
     r["s_temp"] = espaciamiento(r["As_temp_req"], p.barra_temperatura, min(ESPACIAMIENTO_MAX_TEMPERATURA, 3 * h))
     r["As_temp"] = barra(p.barra_temperatura).area * 100 / r["s_temp"]
     verificaciones += [
         Verificacion("Acero de distribución", r["As_dist_req"], r["As_dist"], "cm²/m", "AASHTO 9.7.3.2"),
-        Verificacion("Acero de temperatura (cara superior)", r["As_temp_req"], r["As_temp"], "cm²/m", "AASHTO 5.10.6"),
+        Verificacion("Acero de temperatura (cara superior)", r["As_temp_req"], r["As_temp"], "cm²/m", "Criterio de clase"),
     ]
     r["verificaciones"] = verificaciones
 
@@ -733,7 +741,8 @@ def _seccion_tikz(p: DatosPuente, Eb: float) -> str:
 DESCRIPCIONES_LATEX = (
     ("min(Mcr, 1.33M_u) <= φMn", r"$\min(M_{cr};\,1.33M_u) \le \phi M_n$"),
     ("M_u <= φMn", r"$M_u \le \phi M_n$"),
-    ("c/d <= 0.375", r"$c/d \le 0.375$"),
+    ("c/d <= 0.42", r"$c/d \le 0.42$"),
+    ("ρ >= 0.03 f'c/fy", r"$\rho \ge 0.03\,f'_c/f_y$"),
     ("fss <= 0.6 fy", r"$f_{ss} \le 0.6 f_y$"),
     ("s <= s_max", r"$s \le s_{\max}$"),
     ("Δf <= ΔF_TH", r"$\Delta f \le \Delta F_{TH}$"),
@@ -822,6 +831,18 @@ def valores_latex(r: dict, r2: dict) -> dict[str, str]:
     v["raiz_1"] = num(math.sqrt(min(L * 1000, 18000) * min(p.W * 1000, 9000)), 1)
     v["raiz_m"] = num(math.sqrt(min(L * 1000, 18000) * min(p.W * 1000, 18000)), 1)
     v["E"] = num(r["E"], 3)
+    v["M_1carril"] = num(r["M_1carril"], 3)
+    v["M_multi"] = num(r["M_multi"], 3)
+    v["gobierna_carriles"] = r["gobierna_carriles"]
+    v["raiz_1"] = num(math.sqrt(min(L, 18.26) * min(p.W, 9.14)), 4)
+    v["raiz_m"] = num(math.sqrt(min(L, 18.26) * min(p.W, 18.0)), 4)
+    v["W1_1"] = num(min(p.W, 9.14), 2)
+    v["W1_m"] = num(min(p.W, 18.0), 2)
+    v["W_NL"] = num(p.W / r["NL"], 3)
+    v["E1_m"] = num(r["E1"], 3)
+    v["Em_sin"] = num(2.10 + 0.12 * math.sqrt(min(L, 18.26) * min(p.W, 18.0)), 3)
+    v["rho_min"] = num(RHO_MIN_COEF * p.f_c / p.fy, 4)
+    v["As_min_rho"] = num(RHO_MIN_COEF * p.f_c / p.fy * 100 * p.d, 2)
     v["Eb"] = num(r["Eb"], 3)
     v["Eb_formula"] = num(p.ancho_barrera + 0.30 + r["E"] / 4, 3)
     v["E_2"] = num(r["E"] / 2, 3)
@@ -881,7 +902,7 @@ def valores_latex(r: dict, r2: dict) -> dict[str, str]:
     v["s_dist"] = num(r["s_dist"], 1)
     v["As_dist"] = num(r["As_dist"], 2)
     v["As_temp_req"] = num(r["As_temp_req"], 2)
-    v["As_temp_mm"] = num(r["As_temp_req"] / 10, 3)
+    v["As_temp_mm2"] = num(r["As_temp_req"] * 100, 1)
     v["s_temp"] = num(r["s_temp"], 1)
     v["As_temp"] = num(r["As_temp"], 2)
     v["bp"] = p.barra_principal.replace('"', "''")
