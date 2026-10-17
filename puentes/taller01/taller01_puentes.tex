@@ -1,0 +1,631 @@
+% Plantilla: puente_losa.py reemplaza cada marcador (clave entre << y >>) por su valor calculado.
+% No editar taller01_puentes.tex a mano: se regenera al ejecutar el script.
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish,es-nodecimaldot,es-noshorthands,es-tabla]{babel}
+\usepackage[a4paper,margin=2.1cm,headheight=14pt]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,array,tabularx}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,patterns,decorations.pathreplacing}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{float}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{acento}{HTML}{1F4E79}
+\definecolor{ok}{HTML}{1B7F3B}
+\definecolor{mal}{HTML}{B3261E}
+\definecolor{carga}{HTML}{2457C5}
+\definecolor{nota}{HTML}{8A5A00}
+
+\captionsetup{font=small,labelfont={bf,color=acento}}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\renewcommand{\arraystretch}{1.18}
+\allowdisplaybreaks
+
+\pagestyle{fancy}\fancyhf{}
+\lhead{\small\color{acento} Taller de Puentes}
+\rhead{\small Puente losa $L = 20$ ft \textperiodcentered{} Teorema de Barré}
+\cfoot{\small\thepage}
+
+\newtcolorbox{resultado}{colback=acento!6,colframe=acento,boxrule=0.8pt,arc=2pt,
+  left=6pt,right=6pt,top=4pt,bottom=4pt}
+\newtcolorbox{supuesto}{colback=nota!7,colframe=nota!70,boxrule=0.6pt,arc=2pt,
+  left=6pt,right=6pt,top=3pt,bottom=3pt,fontupper=\small}
+
+\newcommand{\uT}{\,\mathrm{t}}
+\newcommand{\uTm}{\,\mathrm{t{\cdot}m}}
+\newcommand{\uTmm}{\,\mathrm{t{\cdot}m/m}}
+\newcommand{\uTpm}{\,\mathrm{t/m}}
+\newcommand{\uKg}{\,\mathrm{kg/cm^2}}
+\newcommand{\uCm}{\,\mathrm{cm}}
+\newcommand{\uCmm}{\,\mathrm{cm^2/m}}
+\newcommand{\uM}{\,\mathrm{m}}
+\newcommand{\uMm}{\,\mathrm{mm}}
+\newcommand{\ok}{\ensuremath{\;\textcolor{ok}{\checkmark}}}
+\newcommand{\refn}[1]{\tag*{\small\color{acento}[#1]}}
+
+% Viga simplemente apoyada de luz #1 (en las unidades del tikzpicture)
+\newcommand{\vigaSA}[1]{%
+  \draw[line width=1.8pt] (0,0) -- (#1,0);
+  \draw[fill=white] (0,0) -- (-0.20,-0.36) -- (0.20,-0.36) -- cycle;
+  \fill[pattern=north east lines] (-0.30,-0.36) rectangle (0.30,-0.48);
+  \draw[fill=white] (#1,0) -- ({#1-0.20},-0.36) -- ({#1+0.20},-0.36) -- cycle;
+  \draw ({#1-0.30},-0.44) -- ({#1+0.30},-0.44);
+  \node[font=\scriptsize] at (0,-0.68) {A};
+  \node[font=\scriptsize] at (#1,-0.68) {B};
+}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries\color{acento} TALLER --- DISEÑO DE PUENTES}\\[6pt]
+{\large \textbf{Pregunta 01:} puente losa de concreto armado, $L = 20$ ft}\\[2pt]
+{\large \textbf{Pregunta 02:} reacción y momento máximo por el Teorema de Barré}\\[10pt]
+\begin{tabular}{>{\bfseries}r p{12.9cm}}
+Alumno: & \rule{8cm}{0.4pt}\\
+Configuración: & A--L: $f'_c = 420\uKg$, asfalto 3'', ejes HL-93 $d_{1-2} = 3.00\uM$ y $d_{2-3} = 3.50\uM$\\
+Normas: & AASHTO LRFD Bridge Design Specifications (base del Manual de Puentes MTC-2018);
+          Manual de Carreteras: Diseño Geométrico DG-2018\\
+Unidades: & cargas en t y m; diseño en kg y cm (las fórmulas AASHTO en mm o MPa se evalúan en esas unidades)
+\end{tabular}
+\end{center}
+
+%==========================================================================
+\section*{0. Criterios de clase aplicados}
+
+\begin{enumerate}[leftmargin=*,label=\textbf{\arabic*.},itemsep=3pt]
+\item \textbf{Estados límite.} Servicio (S), Fatiga y Fractura (FxF), Resistencia (R) y Evento Extremo (EE).
+  El momento de diseño $M_u$ sale de \textbf{Resistencia I}; con Servicio I se controla la fisuración y con
+  Fatiga I el rango de esfuerzos del acero. Evento Extremo (sismo, socavación, choque) no gobierna la flexión
+  de una losa simplemente apoyada: se revisa en apoyos y subestructura.
+\item \textbf{Tipo de estructura según la luz.} Para $L = 50$ m no sirven ni la viga ni la losa de concreto
+  armado: se pasa a pretensado o postensado, o se acorta la luz con apoyos intermedios (25\,+\,25 m;
+  20\,+\,10\,+\,20 m). Para $L = 6.096$ m la solución natural es una \textbf{losa maciza simplemente apoyada}.
+\item \textbf{Peraltes mínimos} (AASHTO Tabla 2.5.2.6.3-1, $S$ = luz en mm). Los valores de la pizarra
+  salen de estas fórmulas:
+
+  \begin{center}\small
+  \begin{tabular}{lcc}
+  \toprule
+  Superestructura & Simplemente apoyada (SA) & Continua (C)\\
+  \midrule
+  Losa, refuerzo paralelo al tráfico & $t = \dfrac{1.2\,(S+3000)}{30}$ & $t = \dfrac{S+3000}{30} \ge 165\uMm$\\[10pt]
+  Viga T de concreto armado & $h = 0.070\,L$ & $h = 0.065\,L$\\
+  \bottomrule
+  \end{tabular}
+  \end{center}
+  Pizarra: SA, $L = 20$ m $\rightarrow$ $t = 1.2(23\,000)/30 = 920\uMm \approx 0.90\uM$ y $h = 0.070(20) = 1.40\uM$;
+  C, $L = 50$ m $\rightarrow$ $t = 53\,000/30 = 1767\uMm \approx 1.77\uM$ y $h = 0.065(50) = 3.25\uM$.
+\item \textbf{Carga viva HL-93} (AASHTO 3.6.1.2): camión de $3.63$--$14.52$--$14.52\uT$ (separaciones 4.27 m y
+  de 4.27 a 9.00 m), tándem de $2\times 11.34\uT$ separados 1.20 m y carga de carril de $0.952\uTpm$ en 3.00 m
+  de ancho. Se toma el mayor efecto entre camión y tándem y se le suma el carril. En este taller las
+  separaciones del camión cambian según el apellido: $d_{1-2} = 3.00\uM$ y $d_{2-3} = 3.50\uM$.
+\end{enumerate}
+
+%==========================================================================
+\section*{PREGUNTA 01 --- Puente losa de concreto armado, $L = 20$ ft}
+
+\subsection*{1.1 Datos}
+\begin{center}\small
+\begin{tabular}{ll@{\hspace{1.5cm}}ll}
+\toprule
+Luz & $L = 20\,\text{ft}\times 0.3048 = 6.096\uM$ & Concreto & $f'_c = 420\uKg$ ($41.19$ MPa)\\
+Tránsito & IMDA $= 4\,500$ veh/día & Acero & $f_y = 4\,200\uKg$ (Grado 60)\\
+Orografía & terreno accidentado (tipo 3) & Asfalto & $3'' = 7.62\uCm$\\
+Velocidad de diseño & $V = 70$ km/h & Ejes HL-93 & $d_{1-2} = 3.00\uM$, $d_{2-3} = 3.50\uM$\\
+Gálibo hidráulico & $\ge 2.50\uM$ & Importancia & puente importante\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{1.2 Clasificación de la vía y sección transversal}
+Con IMDA $= 4\,500$ veh/día $\in [4\,001;\ 6\,000]$ la vía es \textbf{Autopista de Segunda Clase} (DG-2018, Art.~101.01):
+calzadas separadas por un separador central de 1.00 a 6.00 m, cada una con dos o más carriles de 3.60 m.
+Como las calzadas van separadas, se proyectan \textbf{dos puentes gemelos}, uno por sentido, iguales entre sí.
+Cada puente lleva 2 carriles de 3.60 m, bermas y barreras tipo New Jersey:
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1.28cm,y=1.28cm]
+\fill[gray!25] (0.400,0) rectangle (11.200,0.0762);
+\draw[fill=gray!8] (0,-0.400) rectangle (11.600,0);
+\node[font=\scriptsize] at (5.800,-0.200) {Losa maciza $t = 0.40$ m};
+\draw[fill=gray!35] (0.000,0.000) -- (0.400,0.000) -- (0.400,0.075) -- (0.225,0.330) -- (0.150,0.810) -- (0.000,0.810) -- cycle;
+\draw[fill=gray!35] (11.600,0.000) -- (11.200,0.000) -- (11.200,0.075) -- (11.375,0.330) -- (11.450,0.810) -- (11.600,0.810) -- cycle;
+\draw[<->, >=Stealth] (0.000,1.15) -- (0.400,1.15) node[midway, above, font=\scriptsize] {0.40};
+\draw[gray] (0.000,1.05) -- (0.000,1.25);
+\draw[<->, >=Stealth] (0.400,1.15) -- (1.400,1.15) node[midway, above, font=\scriptsize] {1.00};
+\draw[gray] (0.400,1.05) -- (0.400,1.25);
+\node[font=\scriptsize] at (0.900,0.35) {Berma int.};
+\draw[<->, >=Stealth] (1.400,1.15) -- (5.000,1.15) node[midway, above, font=\scriptsize] {3.60};
+\draw[gray] (1.400,1.05) -- (1.400,1.25);
+\node[font=\scriptsize] at (3.200,0.35) {Carril 1};
+\draw[<->, >=Stealth] (5.000,1.15) -- (8.600,1.15) node[midway, above, font=\scriptsize] {3.60};
+\draw[gray] (5.000,1.05) -- (5.000,1.25);
+\node[font=\scriptsize] at (6.800,0.35) {Carril 2};
+\draw[<->, >=Stealth] (8.600,1.15) -- (11.200,1.15) node[midway, above, font=\scriptsize] {2.60};
+\draw[gray] (8.600,1.05) -- (8.600,1.25);
+\node[font=\scriptsize] at (9.900,0.35) {Berma ext.};
+\draw[<->, >=Stealth] (11.200,1.15) -- (11.600,1.15) node[midway, above, font=\scriptsize] {0.40};
+\draw[gray] (11.200,1.05) -- (11.200,1.25);
+\draw[gray] (11.600,1.05) -- (11.600,1.25);
+\draw[dashed] (5.000,0.0762) -- (5.000,0.20);
+\draw[<->, >=Stealth] (0,-0.750) -- (11.600,-0.750) node[midway, below, font=\scriptsize] {$W = 11.60$ m};
+\draw[decorate, decoration={brace, mirror, amplitude=4pt}] (0,-0.480) -- (1.477,-0.480) node[midway, below=3pt, font=\scriptsize] {$E_b$};
+\draw[decorate, decoration={brace, amplitude=4pt}] (11.600,-0.480) -- (10.123,-0.480) node[midway, below=3pt, font=\scriptsize] {$E_b$};
+\end{tikzpicture}
+\caption{Sección transversal de un puente (un sentido). Cotas en m. $E_b$: franja de borde.}
+\end{figure}
+
+Ancho de calzada, ancho total y número de carriles de diseño:
+\begin{align*}
+w &= 1.00 + 7.20 + 2.60 = 10.80\uM \quad\text{(entre caras de barreras)}\qquad
+W = 10.80 + 2(0.40) = 11.60\uM\\
+N_L &= \operatorname{ENT}\!\left(\frac{w}{3.60}\right) = \operatorname{ENT}\!\left(\frac{10.80}{3.60}\right)
+ = \operatorname{ENT}(3.00) = \boxed{3\ \text{carriles de diseño}} \refn{AASHTO 3.6.1.1.1}
+\end{align*}
+Aunque solo se pintan 2 carriles, AASHTO cuenta el ancho de las bermas porque en el futuro pueden usarse como carril.
+
+\begin{supuesto}
+\textbf{Supuesto por confirmar:} bermas de 1.00 m (interior) y 2.60 m (exterior). Verificar con la
+Tabla 304.02 de la DG-2018 y con el criterio del curso. El diseño depende poco de este dato: con una berma
+exterior de 3.00 m, $N_L$ sigue siendo 3 y el ancho de franja $E$ cambia menos de 1\%.
+\end{supuesto}
+
+\subsection*{1.3 Tipo de superestructura y predimensionamiento}
+Losa maciza de concreto armado, simplemente apoyada, con el refuerzo principal paralelo al tráfico.
+\begin{align*}
+t_{\min} &= \frac{1.2\,(S+3000)}{30} = \frac{1.2\,(6\,096+3000)}{30} = 363.8\uMm
+ \refn{AASHTO Tabla 2.5.2.6.3-1}\\
+&\Rightarrow\ \boxed{t = 0.40\uM} \ \ge t_{\min} = 0.364\uM \ok
+\end{align*}
+
+\subsection*{1.4 Materiales y parámetros de la sección}
+Propiedades del concreto y del acero, y peralte efectivo con una capa de barras:
+\begin{align*}
+E_c &= 15\,344\sqrt{f'_c} = 15\,344\sqrt{420} = 314\,460\uKg
+ \refn{AASHTO 5.4.2.4, $w_c = 2320$ kg/m$^3$}\\
+E_s &= 200\,000\ \text{MPa} = 2\,039\,432\uKg \qquad
+n = \frac{E_s}{E_c} = 6.49 \refn{AASHTO 5.4.3.2}\\
+\beta_1 &= 0.85 - 0.05\,\frac{f'_c-280}{70} = 0.85 - 0.05\,\frac{420-280}{70} = 0.750
+ \refn{AASHTO 5.6.2.2}\\
+f_r &= 0.63\sqrt{f'_c\,[\text{MPa}]} = 0.63\sqrt{41.19}\ \text{MPa} = 41.23\uKg \refn{AASHTO 5.4.2.6}\\
+d &= t - r - \frac{d_b}{2} = 40 - 2.5 - \frac{2.54}{2} = 36.23\uCm
+ \quad(\text{barra } \varnothing\,1'',\ r = 2.5\uCm) \refn{AASHTO Tabla 5.10.1-1}
+\end{align*}
+
+\subsection*{1.5 Modificador de cargas}
+$\eta_D = 1.00$ (diseño convencional), $\eta_R = 1.00$ (redundancia convencional) y $\eta_I = 1.05$
+(\textbf{puente importante}, dato del problema):
+\begin{align*}
+\eta = \eta_D\,\eta_R\,\eta_I = 1.00 \times 1.00 \times 1.05 = 1.05 \refn{AASHTO 1.3.2 a 1.3.5}
+\end{align*}
+En Servicio y Fatiga se usa $\eta = 1.00$.
+
+\subsection*{1.6 Cargas permanentes (franja interior de 1 m)}
+Peso propio de la losa (DC) y del asfalto (DW), por metro de ancho, con $\gamma_c = 2.40$ y
+$\gamma_{asf} = 2.25\ \mathrm{t/m^3}$:
+\begin{align*}
+w_{DC} &= t\,\gamma_c = 0.40 \times 2.40 = 0.960\uTpm \refn{AASHTO Tabla 3.5.1-1}\\
+w_{DW} &= e\,\gamma_{asf} = 0.0762 \times 2.25 = 0.1715\uTpm\\
+M_{DC} &= w_{DC}\,\frac{L^2}{8} = 0.960 \times \frac{6.096^2}{8} = 0.960 \times 4.6452 = 4.459\uTmm\\
+M_{DW} &= w_{DW}\,\frac{L^2}{8} = 0.1715 \times 4.6452 = 0.796\uTmm
+\end{align*}
+
+\subsection*{1.7 Carga viva vehicular por carril}
+
+\paragraph{Teorema de Barré.} En una viga simplemente apoyada recorrida por un tren de cargas, el momento máximo
+absoluto ocurre bajo una de las cargas, cuando el centro de la luz divide en partes iguales la distancia $e$ entre
+esa carga y la resultante $R$ de las cargas que están sobre la viga. La carga crítica queda a $x = L/2 + e/2$
+del apoyo y
+\begin{gather*}
+M_{\max} = \frac{R}{L}\left(\frac{L}{2} - \frac{|e|}{2}\right)^{2} - \sum_{\text{lado opuesto a } R} P_j\,|x_j - x_k|\\
+\text{Dos cargas iguales } P \text{ separadas } s \ (e = s/2):\qquad
+M_{\max} = \frac{2P}{L}\left(\frac{L}{2} - \frac{s}{4}\right)^{2}
+\end{gather*}
+La posición solo vale si en ella ningún otro eje entra o sale de la luz. Si no, el máximo de ese tramo
+ocurre cuando un eje está sobre un apoyo, y se evalúa ahí.
+
+\paragraph{a) Camión HL-93 modificado} ($3.63$ --- $3.00$ m --- $14.52$ --- $3.50$ m --- $14.52$ t).
+Su largo es $3.00 + 3.50 = 6.50\uM > L = 6.096\uM$: \textbf{los tres ejes no caben a la vez},
+así que se analizan los grupos de dos ejes y el eje solo.
+
+\begin{center}\small
+\begin{tabular}{ccccccc}
+\toprule
+Grupo & Eje crítico & $R$ (t) & $e$ (m) & $x$ crítico (m) & ¿Posición válida? & $M$ (t$\cdot$m)\\
+\midrule
+1--2 & 1 & 18.15 & -2.400 & 1.848 & \textcolor{ok}{sí} & 10.168 \\
+1--2 & 2 & 18.15 & 0.600 & 3.348 & \textcolor{ok}{sí} & 22.484 \\
+2--3 & 2 & 29.04 & -1.750 & 2.173 & \textcolor{ok}{sí} & 22.494 \\
+2--3 & 3 & 29.04 & 1.750 & 3.923 & \textcolor{ok}{sí} & 22.494 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Un eje de 14.52 t solo al centro: $M = PL/4 = 14.52\times6.096/4 = 22.128\uTm$. Gobierna el grupo de ejes
+2, 3:
+\begin{equation*}
+M_{\text{camión}} = \frac{2(14.52)}{6.096}\left(\frac{6.096}{2} - \frac{3.50}{4}\right)^{2}
+ = 22.494\uTm \quad\text{(bajo el eje 2, a } x = 2.173\uM\text{)}
+\end{equation*}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1.7224cm,y=1cm]
+\clip (-1.4,-1.65) rectangle ({6.0960+1.4},2.15);
+\vigaSA{6.0960}
+\draw[-{Stealth[length=2.2mm]}, very thick, gray!55] (-0.827,1.25) -- (-0.827,0.10) node[pos=0, above, font=\scriptsize, text=gray!55, align=center] {\textbf{1}\\3.63};
+\draw[-{Stealth[length=2.2mm]}, very thick, carga] (2.173,1.25) -- (2.173,0.10) node[pos=0, above, font=\scriptsize, text=carga, align=center] {\textbf{2}\\14.52};
+\draw[-{Stealth[length=2.2mm]}, very thick, carga] (5.673,1.25) -- (5.673,0.10) node[pos=0, above, font=\scriptsize, text=carga, align=center] {\textbf{3}\\14.52};
+\draw[dashed,gray] ({6.0960/2},-0.25) -- ({6.0960/2},1.95) node[above,font=\scriptsize]{$L/2$};
+\draw[<->,>=Stealth] (0,-1.0) -- (2.1730,-1.0) node[midway,below,font=\scriptsize]{$x = 2.173$ m};
+\draw[<->,>=Stealth] (0,-1.45) -- (6.0960,-1.45) node[midway,fill=white,font=\scriptsize,inner sep=1pt]{$L = 6.096$ m};
+\end{tikzpicture}
+\caption{Camión HL-93 modificado en la posición de Barré (en gris, el eje que queda fuera de la luz).}
+\end{figure}
+
+\paragraph{b) Tándem} ($2 \times 11.34\uT$ a 1.20 m):
+\begin{equation*}
+M_{\text{tándem}} = \frac{2(11.34)}{6.096}\left(\frac{6.096}{2} - \frac{1.20}{4}\right)^{2}
+ = \frac{22.68}{6.096}\,(2.748)^{2} = 28.095\uTm \quad(x = 3.348\uM)
+\end{equation*}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1.7224cm,y=1cm]
+\clip (-1.4,-1.65) rectangle ({6.0960+1.4},2.15);
+\vigaSA{6.0960}
+\draw[-{Stealth[length=2.2mm]}, very thick, carga] (2.148,1.25) -- (2.148,0.10) node[pos=0, above, font=\scriptsize, text=carga, align=center] {\textbf{1}\\11.34};
+\draw[-{Stealth[length=2.2mm]}, very thick, carga] (3.348,1.25) -- (3.348,0.10) node[pos=0, above, font=\scriptsize, text=carga, align=center] {\textbf{2}\\11.34};
+\draw[dashed,gray] ({6.0960/2},-0.25) -- ({6.0960/2},1.95) node[above,font=\scriptsize]{$L/2$};
+\draw[<->,>=Stealth] (0,-1.0) -- (3.3480,-1.0) node[midway,below,font=\scriptsize]{$x = 3.348$ m};
+\draw[<->,>=Stealth] (0,-1.45) -- (6.0960,-1.45) node[midway,fill=white,font=\scriptsize,inner sep=1pt]{$L = 6.096$ m};
+\end{tikzpicture}
+\caption{Tándem de diseño en la posición de Barré.}
+\end{figure}
+
+\paragraph{c) Carga de carril:} $M_{\text{carril}} = 0.952 \times 4.6452 = 4.422\uTm$.
+
+\paragraph{d) Momento por carril con impacto.} $IM = 33\%$ solo para camión o tándem, no para el carril
+(AASHTO 3.6.2.1). Gobierna el \textbf{tándem} ($28.095 > 22.494$):
+\begin{align*}
+M_{LL+IM} &= (1+IM)\,M_{\text{tándem}} + M_{\text{carril}} = 1.33 \times 28.095 + 4.422\\
+ &= 37.367 + 4.422 = \boxed{41.789\uTm \text{ por carril}}
+\end{align*}
+
+\subsection*{1.8 Ancho de franja equivalente}
+Con $L_1 = \min(L;\ 18\,000) = 6\,096\uMm$ y el ancho total $W = 11\,600\uMm$ (AASHTO 4.6.2.3):
+\begin{align*}
+\intertext{Un carril cargado, $W_1 = \min(W;\ 9\,000) = 9\,000\uMm$:}
+E_1 &= 250 + 0.42\sqrt{L_1 W_1} = 250 + 0.42\sqrt{6\,096\times9\,000} = 250 + 0.42\,(7\,407.0) = 3\,360.9\uMm
+\intertext{Dos o más carriles cargados, $W_1 = \min(W;\ 18\,000) = 11\,600\uMm$:}
+E_m &= 2100 + 0.12\sqrt{L_1 W_1} = 2100 + 0.12\sqrt{6\,096\times11\,600} = 2100 + 0.12\,(8\,409.1)
+ = 3\,109.1\uMm\\
+ &\le \frac{W}{N_L} = \frac{11\,600}{3} = 3\,866.7\uMm \quad\Rightarrow\quad E_m = 3.109\uM\\
+E &= \min(E_1;\ E_m) = \min(3.361;\ 3.109) = \boxed{3.109\uM}
+\end{align*}
+Estos anchos ya incluyen el factor de presencia múltiple, así que no se vuelve a aplicar.
+
+\textbf{Franja de borde} (AASHTO 4.6.2.1.4b): distancia del borde a la cara de la barrera + 0.30 m + $E/4$:
+\begin{equation*}
+E_b = 0.40 + 0.30 + \frac{3.109}{4} = 1.477\uM \ \le\ \min\!\left(\frac{E}{2} = 1.555;\ 1.80\right)
+\ \Rightarrow\ \boxed{E_b = 1.477\uM}
+\end{equation*}
+
+\subsection*{1.9 Momentos por metro de ancho y combinaciones de carga}
+\textbf{Franja interior:}
+$M_{LL+IM} = \dfrac{41.789}{3.109} = 13.441\uTmm$.
+
+\textbf{Franja de borde:} la barrera ($0.2028\ \mathrm{m^2}\times 2.40 = 0.487\uTpm$) va en $E_b$; el
+asfalto solo cubre $E_b - 0.40 = 1.077\uM$; la carga viva es una línea de ruedas
+más la parte del carril que cae en la franja, con $m = 1.20$ (un carril cargado):
+\begin{align*}
+w_{DC} &= 0.960 + \frac{0.487}{1.477} = 1.289\uTpm \qquad
+w_{DW} = 0.1715\times\frac{1.077}{1.477} = 0.1250\uTpm\\
+M_{LL+IM} &= \frac{m\left[\,0.5\,(1.33)\,M_{\text{tándem}} + M_{\text{carril}}\,\dfrac{E_b - 0.40}{3.00}\right]}{E_b}
+ = \frac{1.20\left[\,0.5(1.33)(28.095) + 4.422\,\dfrac{1.077}{3.00}\right]}{1.477}\\
+ &= \frac{1.20\,(20.271)}{1.477} = 16.466\uTmm
+\end{align*}
+
+\textbf{Combinaciones} (AASHTO Tabla 3.4.1-1):
+\begin{align*}
+\text{Resistencia I:}\quad M_u &= \eta\,\big[1.25\,M_{DC} + 1.50\,M_{DW} + 1.75\,M_{LL+IM}\big]\\
+\text{Servicio I:}\quad M_s &= 1.00\,M_{DC} + 1.00\,M_{DW} + 1.00\,M_{LL+IM}
+\end{align*}
+Reemplazando los momentos de cada franja:
+\begin{align*}
+M_u^{\text{int}} &= 1.05\,\big[1.25(4.459) + 1.50(0.796) + 1.75(13.441)\big] = 1.05\,(30.290)
+ = \boxed{31.805\uTmm}\\
+M_u^{\text{borde}} &= 1.05\,\big[1.25(5.990) + 1.50(0.581) + 1.75(16.466)\big] = 1.05\,(37.175)
+ = \boxed{39.033\uTmm}
+\end{align*}
+
+\begin{center}\small
+\begin{tabular}{lccccccc}
+\toprule
+Franja & Ancho (m) & $M_{DC}$ & $M_{DW}$ & $M_{LL+IM}$ & $M_u$ (Resist. I) & $M_s$ (Serv. I) \\
+ & & \multicolumn{5}{c}{(t$\cdot$m/m)}\\
+\midrule
+Interior & 1.000 & 4.459 & 0.796 & 13.441 & \textbf{31.805} & 18.697\\
+Borde & 1.477 & 5.990 & 0.581 & 16.466 & \textbf{39.033} & 23.037\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{1.10 Diseño por flexión (Resistencia I)}
+Sección rectangular $b = 100\uCm$, $d = 36.23\uCm$, $\phi = 0.90$:
+\begin{equation*}
+A_s = \frac{0.85\,f'_c\,b\,d}{f_y}\left[1 - \sqrt{1 - \frac{2\,M_u}{\phi\,0.85\,f'_c\,b\,d^{2}}}\,\right]
+\qquad a = \frac{A_s f_y}{0.85\,f'_c\,b} \qquad \phi M_n = \phi A_s f_y\left(d - \frac{a}{2}\right)
+\refn{AASHTO 5.6.3.2}
+\end{equation*}
+
+\textbf{Franja interior} ($M_u = 3\,180\,471$ kg$\cdot$cm):
+\begin{align*}
+\frac{2M_u}{\phi\,0.85 f'_c b d^2} &= 0.1508 \quad\Rightarrow\quad
+A_s = \frac{0.85(420)(100)(36.23)}{4\,200}\left[1-\sqrt{1-0.1508}\right] = 24.17\uCmm\\
+s &= \frac{100\,A_b}{A_s} = \frac{100(5.10)}{24.17} = 21.1\uCm
+ \ \Rightarrow\ \boxed{\varnothing\,1'' \ @\ 20.0\uCm}\quad (A_s = 25.50\uCmm)\\
+a &= \frac{25.50(4\,200)}{0.85(420)(100)} = 3.00\uCm \qquad
+c = \frac{a}{\beta_1} = 4.00\uCm \qquad \frac{c}{d} = 0.110 \le 0.375 \Rightarrow \phi = 0.90 \ok\\
+\phi M_n &= 0.90(25.50)(4\,200)\left(36.23 - \frac{3.00}{2}\right) = 33.476\uTmm
+ \ \ge\ M_u = 31.805 \ok\ (D/C = 0.95)
+\end{align*}
+
+\textbf{Franja de borde} ($M_u = 3\,903\,346$ kg$\cdot$cm):
+\begin{align*}
+\frac{2M_u}{\phi\,0.85 f'_c b d^2} &= 0.1851 \quad\Rightarrow\quad
+A_s = \frac{0.85(420)(100)(36.23)}{4\,200}\left[1-\sqrt{1-0.1851}\right] = 29.96\uCmm\\
+s &= \frac{100(5.10)}{29.96} = 17.0\uCm
+ \ \Rightarrow\ \boxed{\varnothing\,1'' \ @\ 15.0\uCm}\quad (A_s = 34.00\uCmm)\\
+a &= 4.00\uCm \qquad c = 5.33\uCm \qquad \frac{c}{d} = 0.147 \le 0.375 \ok\\
+\phi M_n &= 0.90(34.00)(4\,200)\left(36.23 - \frac{4.00}{2}\right) = 43.992\uTmm
+ \ \ge\ M_u = 39.033 \ok\ (D/C = 0.89)
+\end{align*}
+
+\subsection*{1.11 Verificaciones}
+
+\paragraph{a) Acero mínimo} (AASHTO 5.6.3.3): $\phi M_n \ge \min(M_{cr};\ 1.33\,M_u)$, con
+$\gamma_1 = 1.6$ y $\gamma_3 = 0.67$ (A615 Gr 60).
+\begin{align*}
+M_{cr} = \gamma_3\,\gamma_1\,f_r\,S_c = 0.67(1.6)(41.23)\,\frac{100(40)^2}{6}
+ = 0.67(1.6)(41.23)(26\,667) = 11.786\uTmm
+\end{align*}
+Interior: $\min(11.786;\ 42.300) = 11.786 \le \phi M_n = 33.476$ \ok\qquad
+Borde: $\min(11.786;\ 51.915) = 11.786 \le 43.992$ \ok
+
+\paragraph{b) Fisuración, Servicio I} (AASHTO 5.6.7). Sección fisurada transformada, $n = 6.49$:
+\begin{align*}
+\frac{b\,y^2}{2} = n A_s (d - y) \qquad j d = d - \frac{y}{3} \qquad
+f_{ss} = \frac{M_s}{A_s\,j d} \le 0.6 f_y = 2\,520\uKg\\
+d_c = r + \frac{d_b}{2} = 3.77\uCm \qquad
+\beta_s = 1 + \frac{d_c}{0.7\,(h - d_c)} = 1.1487 \qquad
+s \le \frac{123\,000\,\gamma_e}{\beta_s\,f_{ss}} - 2 d_c \ \ [\text{mm, MPa}]
+\end{align*}
+Se usa $\gamma_e = 0.75$ (exposición clase 2, por la humedad del río; con clase 1, $\gamma_e = 1.00$,
+cumple con más holgura).
+\begin{center}\footnotesize
+\begin{tabular}{lcccccccc}
+\toprule
+Franja & $A_s$ (cm$^2$/m) & $nA_s$ (cm$^2$) & $y$ (cm) & $jd$ (cm) & $M_s$ (t$\cdot$m/m) & $f_{ss}$ (kg/cm$^2$) & $s_{\max}$ (cm) & $s$ (cm)\\
+\midrule
+Interior & 25.50 & 165.38 & 9.42 & 33.09 & 18.697 & 2\,215.7 & 29.4 & 20.0 \ok\\
+Borde & 34.00 & 220.51 & 10.63 & 32.69 & 23.037 & 2\,072.8 & 32.0 & 15.0 \ok\\
+\bottomrule
+\end{tabular}
+\end{center}
+Ejemplo (interior): $f_{ss} = 2\,215.7\uKg = 217.3$ MPa,
+$s_{\max} = \dfrac{123\,000(0.75)}{1.1487(217.3)} - 2(37.7)\ \text{mm} = 29.4\uCm$.
+
+\paragraph{c) Fatiga I} (AASHTO 3.6.1.4 y 5.5.3). Un camión con $d_{1-2} = 3.00\uM$ y 9.00 m entre ejes
+traseros, $IM = 15\%$, franja de un carril $E_1$ y sin presencia múltiple (se divide entre 1.20,
+AASHTO 3.6.1.1.2). Con 9.00 m solo entran los ejes 1 y 2: $M = 22.484\uTm$ por carril.
+\begin{align*}
+M_{fat} &= \frac{(1+0.15)\,M}{1.20\,E_1} = \frac{1.15(22.484)}{1.20(3.361)} = 6.411\uTmm \qquad
+\Delta f = \frac{\gamma\,M_{fat}}{A_s\,j d},\ \ \gamma = 1.50\\
+f_{\min} &= \frac{M_{DC} + M_{DW}}{A_s\,j d} \qquad
+\Delta F_{TH} = 24 - 0.33 f_{\min}\ [\text{ksi}] = 1687 - 0.33 f_{\min}\ [\text{kg/cm}^2]
+\end{align*}
+Interior: $f_{\min} = 622.9$, $\Delta f = 1\,139.6 \le \Delta F_{TH} = 1\,481.8\uKg$ \ok\qquad
+Borde: $f_{\min} = 591.2$, $\Delta f = 865.3 \le 1\,492.3\uKg$ \ok
+
+{\small Con la 9.ª edición de AASHTO ($\gamma = 1.75$ y $\Delta F_{TH} = 26 - 22 f_{\min}/f_y$ ksi) también cumple:
+interior $1\,329.6 \le 1\,598.6$; borde $1\,009.5 \le 1\,610.3\uKg$.}
+
+\paragraph{d) Cortante.} Las losas diseñadas por flexión con el método de franjas de AASHTO 4.6.2.3 se consideran
+satisfactorias por corte (AASHTO 5.12.2.1), así que no se diseña refuerzo transversal por corte.
+
+\subsection*{1.12 Acero de distribución y de temperatura}
+Refuerzo transversal inferior (distribución), como porcentaje del acero principal:
+\begin{align*}
+\%\,A_{s,\text{dist}} &= \frac{1750}{\sqrt{S}} = \frac{1750}{\sqrt{6\,096}} = 22.41\% \le 50\%
+ \refn{AASHTO 9.7.3.2}\\
+A_{s,\text{dist}} &= 22.41\% \times 34.00 = 7.62\uCmm
+ \ \Rightarrow\ \boxed{\varnothing\,5/8''\ @\ 25.0\uCm}\quad (8.00\uCmm)
+\end{align*}
+Se calcula con el mayor $A_s$ colocado (franja de borde) para usar un solo espaciamiento en todo el ancho;
+va transversal, en la cara inferior, sobre el acero principal.
+
+Refuerzo superior por contracción y temperatura ($b$ = ancho del puente y $h$ = espesor, en mm; $f_y$ en MPa):
+\begin{align*}
+A_{s,\text{temp}} &= \frac{0.75\,b\,h}{2(b+h)\,f_y} = \frac{0.75(11\,600)(400)}{2(11\,600+400)(411.9)}
+ = 0.352\ \mathrm{mm^2/mm} = 3.52\uCmm \refn{AASHTO 5.10.6}\\
+&0.233 \le 0.352 \le 1.27 \ok \quad\Rightarrow\quad \boxed{\varnothing\,3/8''\ @\ 20.0\uCm}
+ \quad(3.55\uCmm)
+\end{align*}
+Va en la cara superior, en ambas direcciones.
+
+\subsection*{1.13 Gálibo hidráulico}
+El fondo de la losa debe quedar por lo menos 2.50 m sobre el nivel de aguas máximas extraordinarias (NAME):
+\begin{equation*}
+\text{Cota de rasante} \ \ge\ \text{NAME} + 2.50 + t + e_{asf} = \text{NAME} + 2.50 + 0.40 + 0.0762
+ = \boxed{\text{NAME} + 2.976\uM}
+\end{equation*}
+El NAME sale del estudio hidrológico; con él se fija la altura de los estribos.
+
+\subsection*{1.14 Resumen}
+\begin{resultado}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}lX@{}}
+Vía & Autopista de Segunda Clase; dos puentes gemelos de $W = 11.60$ m, $N_L = 3$\\
+Superestructura & losa maciza simplemente apoyada, $L = 6.096$ m, $t = 0.40$ m, $f'_c = 420\uKg$\\
+Momentos de diseño & $M_u = 31.805$ t$\cdot$m/m (interior) \quad $M_u = 39.033$ t$\cdot$m/m (borde)\\
+Acero principal inferior & $\varnothing\,1''\ @\ 20.0$ cm (interior) \quad $\varnothing\,1''\ @\ 15.0$ cm (franjas de borde de 1.477 m)\\
+Distribución inferior & $\varnothing\,5/8''\ @\ 25.0$ cm, transversal\\
+Temperatura superior & $\varnothing\,3/8''\ @\ 20.0$ cm, en ambas direcciones\\
+Rasante & $\ge$ NAME + 2.976 m
+\end{tabularx}
+\end{resultado}
+
+\subsection*{1.15 Cuadro de verificaciones (demanda / capacidad)}
+\begin{center}\small
+\begin{tabular}{p{7.4cm}rrlrl}
+\toprule
+Verificación & Demanda & Capacidad & Unidad & D/C & Estado\\
+\midrule
+Resistencia I, $M_u \le \phi M_n$ (franja interior) & 31.80 & 33.48 & t$\cdot$m/m & 0.95 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Ductilidad $c/d \le 0.375$ (franja interior) & 0.110 & 0.375 &  & 0.29 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Acero mínimo $\min(M_{cr};\,1.33M_u) \le \phi M_n$ (franja interior) & 11.79 & 33.48 & t$\cdot$m/m & 0.35 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Servicio I, $f_{ss} \le 0.6 f_y$ (franja interior) & 2\,215.71 & 2\,520.00 & kg/cm$^2$ & 0.88 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Fisuración, $s \le s_{\max}$ (franja interior) & 20.00 & 29.42 & cm & 0.68 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Fatiga I, $\Delta f \le \Delta F_{TH}$ (franja interior) & 1\,139.63 & 1\,481.82 & kg/cm$^2$ & 0.77 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Resistencia I, $M_u \le \phi M_n$ (franja borde) & 39.03 & 43.99 & t$\cdot$m/m & 0.89 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Ductilidad $c/d \le 0.375$ (franja borde) & 0.147 & 0.375 &  & 0.39 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Acero mínimo $\min(M_{cr};\,1.33M_u) \le \phi M_n$ (franja borde) & 11.79 & 43.99 & t$\cdot$m/m & 0.27 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Servicio I, $f_{ss} \le 0.6 f_y$ (franja borde) & 2\,072.81 & 2\,520.00 & kg/cm$^2$ & 0.82 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Fisuración, $s \le s_{\max}$ (franja borde) & 15.00 & 31.97 & cm & 0.47 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Fatiga I, $\Delta f \le \Delta F_{TH}$ (franja borde) & 865.26 & 1\,492.27 & kg/cm$^2$ & 0.58 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Acero de distribución & 7.62 & 8.00 & cm$^2$/m & 0.95 & \textcolor{ok}{\textbf{CUMPLE}} \\
+Acero de temperatura (cara superior) & 3.52 & 3.55 & cm$^2$/m & 0.99 & \textcolor{ok}{\textbf{CUMPLE}} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+%==========================================================================
+\newpage
+\section*{PREGUNTA 02 --- Reacción y momento máximo por el Teorema de Barré}
+
+\subsection*{2.1 Datos}
+Vehículo de 5 ejes: $7$ --- 3.50 m --- $9$ --- 1.30 m --- $9$ --- 4.50 m --- $9$ --- 1.30 m --- $9$ (t).
+Luz $L = 20$ ft $= 6.096\uM$. Largo del vehículo $= 3.50 + 1.30 + 4.50 + 1.30 = 10.60\uM > L$:
+\textbf{nunca están todos los ejes sobre el puente}, así que hay que ver qué grupo de ejes cabe en cada posición.
+
+\subsection*{2.2 Reacción máxima}
+La reacción $R_A = \sum P_i\,(L - x_i)/L$ varía linealmente mientras no entre ni salga un eje, así que su máximo
+ocurre con un eje sobre el apoyo. Se prueba cada eje sobre el apoyo, con el vehículo en ambos sentidos:
+
+\begin{center}\small
+\begin{tabular}{cccr}
+\toprule
+Sentido & Eje sobre el apoyo & Ejes sobre la luz & $R_A$ (t)\\
+\midrule
+directo & 1 & 1, 2, 3 & 12.746 \\
+directo & 2 & 2, 3, 4 & 16.518 \\
+directo & 3 & 3, 4, 5 & 11.793 \\
+directo & 4 & 4, 5 & 16.081 \\
+directo & 5 & 5 & 9.000 \\
+inverso & 5 & 3, 4, 5 & 16.518 \\
+inverso & 4 & 2, 3, 4 & 11.793 \\
+inverso & 3 & 1, 2, 3 & 17.569 \\
+inverso & 2 & 1, 2 & 11.981 \\
+inverso & 1 & 1 & 7.000 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Gobierna el eje 3 sobre el apoyo, con los ejes 1 y 2 sobre la luz:
+\begin{equation*}
+R_{\max} = 9\cdot\dfrac{6.096-0.00}{6.096} + 9\cdot\dfrac{6.096-1.30}{6.096} + 7\cdot\dfrac{6.096-4.80}{6.096} = \boxed{17.569\uT}
+\end{equation*}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1.7224cm,y=1cm]
+\clip (-1.4,-1.3) rectangle ({6.0960+1.4},2.15);
+\vigaSA{6.0960}
+\draw[-{Stealth[length=2.2mm]}, very thick, carga] (4.800,1.25) -- (4.800,0.10) node[pos=0, above, font=\scriptsize, text=carga, align=center] {\textbf{1}\\7.00};
+\draw[-{Stealth[length=2.2mm]}, very thick, carga] (1.300,1.25) -- (1.300,0.10) node[pos=0, above, font=\scriptsize, text=carga, align=center] {\textbf{2}\\9.00};
+\draw[-{Stealth[length=2.2mm]}, very thick, carga] (-0.000,1.25) -- (-0.000,0.10) node[pos=0, above, font=\scriptsize, text=carga, align=center] {\textbf{3}\\9.00};
+\draw[-{Stealth[length=2.2mm]}, very thick, gray!55] (-4.500,1.25) -- (-4.500,0.10) node[pos=0, above, font=\scriptsize, text=gray!55, align=center] {\textbf{4}\\9.00};
+\draw[-{Stealth[length=2.2mm]}, very thick, gray!55] (-5.800,1.25) -- (-5.800,0.10) node[pos=0, above, font=\scriptsize, text=gray!55, align=center] {\textbf{5}\\9.00};
+\draw[<->,>=Stealth] (0,-1.05) -- (6.0960,-1.05) node[midway,fill=white,font=\scriptsize,inner sep=1pt]{$L = 6.096$ m};
+\end{tikzpicture}
+\caption{Posición de la reacción máxima en el apoyo A (en gris, los ejes fuera de la luz).}
+\end{figure}
+
+\subsection*{2.3 Momento máximo (Teorema de Barré)}
+Para cada grupo de ejes contiguos que cabe en la luz y cada eje crítico se ubica el centro de la luz en el punto
+medio entre el eje y la resultante del grupo ($x = L/2 + e/2$). La posición es válida solo si en ella están
+sobre la luz exactamente los ejes del grupo:
+
+\begin{center}\small
+\begin{tabular}{ccccccc}
+\toprule
+Grupo & Eje crítico & $R$ (t) & $e$ (m) & $x$ crítico (m) & ¿Posición válida? & $M$ (t$\cdot$m)\\
+\midrule
+1--2 & 1 & 16.00 & -1.969 & 2.064 & \textcolor{ok}{sí} & 11.177 \\
+1--2 & 2 & 16.00 & 1.531 & 3.814 & \textcolor{mal}{no} & -- \\
+1--2--3 & 1 & 25.00 & -2.988 & 1.554 & \textcolor{mal}{no} & -- \\
+1--2--3 & 2 & 25.00 & 0.512 & 3.304 & \textcolor{mal}{no} & -- \\
+1--2--3 & 3 & 25.00 & 1.812 & 3.954 & \textcolor{mal}{no} & -- \\
+2--3 & 2 & 18.00 & -0.650 & 2.723 & \textcolor{ok}{sí} & 21.894 \\
+2--3 & 3 & 18.00 & 0.650 & 3.373 & \textcolor{ok}{sí} & 21.894 \\
+2--3--4 & 2 & 27.00 & -2.367 & 1.865 & \textcolor{mal}{no} & -- \\
+2--3--4 & 3 & 27.00 & -1.067 & 2.515 & \textcolor{mal}{no} & -- \\
+2--3--4 & 4 & 27.00 & 3.433 & 4.765 & \textcolor{mal}{no} & -- \\
+3--4 & 3 & 18.00 & -2.250 & 1.923 & \textcolor{mal}{no} & -- \\
+3--4 & 4 & 18.00 & 2.250 & 4.173 & \textcolor{mal}{no} & -- \\
+3--4--5 & 3 & 27.00 & -3.433 & 1.331 & \textcolor{mal}{no} & -- \\
+3--4--5 & 4 & 27.00 & 1.067 & 3.581 & \textcolor{mal}{no} & -- \\
+3--4--5 & 5 & 27.00 & 2.367 & 4.231 & \textcolor{mal}{no} & -- \\
+4--5 & 4 & 18.00 & -0.650 & 2.723 & \textcolor{ok}{sí} & 21.894 \\
+4--5 & 5 & 18.00 & 0.650 & 3.373 & \textcolor{ok}{sí} & 21.894 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Los grupos de tres ejes no son válidos: al ubicarlos según Barré, un eje del grupo queda fuera o entra otro eje.
+Las posiciones válidas son los ejes dobles 2--3 y 4--5 (9 t + 9 t a 1.30 m):
+\begin{equation*}
+M_{\max} = \frac{2P}{L}\left(\frac{L}{2} - \frac{s}{4}\right)^{2}
+ = \frac{2(9)}{6.096}\left(\frac{6.096}{2} - \frac{1.30}{4}\right)^{2} = \boxed{21.894\uTm}
+\end{equation*}
+bajo el eje 2, a $x = 2.723\uM$ del apoyo (0.325 m del centro de la luz).
+Comparación: un eje de 9 t solo al centro da $PL/4 = 13.716\uTm$, y con el eje 2 al centro (el eje 3
+también sobre la luz) se obtiene $21.582\uTm$; ambos son menores. Un barrido numérico del vehículo
+cada 1 mm confirma $M_{\max} = 21.894\uTm$.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1.7224cm,y=1cm]
+\clip (-1.4,-1.65) rectangle ({6.0960+1.4},2.15);
+\vigaSA{6.0960}
+\draw[-{Stealth[length=2.2mm]}, very thick, gray!55] (-0.777,1.25) -- (-0.777,0.10) node[pos=0, above, font=\scriptsize, text=gray!55, align=center] {\textbf{1}\\7.00};
+\draw[-{Stealth[length=2.2mm]}, very thick, carga] (2.723,1.25) -- (2.723,0.10) node[pos=0, above, font=\scriptsize, text=carga, align=center] {\textbf{2}\\9.00};
+\draw[-{Stealth[length=2.2mm]}, very thick, carga] (4.023,1.25) -- (4.023,0.10) node[pos=0, above, font=\scriptsize, text=carga, align=center] {\textbf{3}\\9.00};
+\draw[-{Stealth[length=2.2mm]}, very thick, gray!55] (8.523,1.25) -- (8.523,0.10) node[pos=0, above, font=\scriptsize, text=gray!55, align=center] {\textbf{4}\\9.00};
+\draw[-{Stealth[length=2.2mm]}, very thick, gray!55] (9.823,1.25) -- (9.823,0.10) node[pos=0, above, font=\scriptsize, text=gray!55, align=center] {\textbf{5}\\9.00};
+\draw[dashed,gray] ({6.0960/2},-0.25) -- ({6.0960/2},1.95) node[above,font=\scriptsize]{$L/2$};
+\draw[<->,>=Stealth] (0,-1.0) -- (2.7230,-1.0) node[midway,below,font=\scriptsize]{$x = 2.723$ m};
+\draw[<->,>=Stealth] (0,-1.45) -- (6.0960,-1.45) node[midway,fill=white,font=\scriptsize,inner sep=1pt]{$L = 6.096$ m};
+\end{tikzpicture}
+\caption{Posición de Barré para el momento máximo (eje doble 2--3).}
+\end{figure}
+
+\begin{resultado}
+\textbf{Respuestas, Pregunta 02:} \quad $R_{\max} = 17.569\uT$ \qquad $M_{\max} = 21.894\uTm$
+\end{resultado}
+
+\vspace{4pt}
+{\small\textit{Cálculos generados con \texttt{puente\_losa.py} (mismos datos que este documento). Supuestos por
+confirmar: anchos de berma y sección de la barrera (1.2), factor de exposición $\gamma_e$ (1.11-b) y edición
+de AASHTO para Fatiga (1.11-c).}}
+
+\end{document}
