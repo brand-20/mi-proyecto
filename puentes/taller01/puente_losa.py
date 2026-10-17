@@ -1080,6 +1080,16 @@ def valores_latex(r: dict, r2: dict) -> dict[str, str]:
     signo = 1 if re2.sentido == "directo" else -1
     v["tikz_p2_R"] = _ejes_tikz([(i + 1, e.P, signo * (e.x - x_apoyo)) for i, e in enumerate(ejes2)], L)
     v["p2_PL4"] = num(9.0 * L / 4, 3)
+    # Reacciones en la posición de Barré (momento máximo)
+    R_luz = sum(ejes2[i].P for i in m2.en_luz)
+    x_R = sum(ejes2[i].P * (m2.a + ejes2[i].x) for i in m2.en_luz) / R_luz
+    RA = reaccion_A(ejes2, m2.a, L)
+    v["p2_Rluz"] = num(R_luz, 2)
+    v["p2_xR_abs"] = num(x_R, 3)
+    v["p2_LmxR"] = num(L - x_R, 3)
+    v["p2_RA"] = num(RA, 3)
+    v["p2_RB"] = num(R_luz - RA, 3)
+    v["p2_M_check"] = num(RA * m2.x_critico, 3)
     v["p2_M_un_eje"] = num(momento_bajo_eje(ejes2, L / 2 - ejes2[1].x, L, 1), 3)
     return v
 
